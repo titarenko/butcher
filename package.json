@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/titarenko/butcher/issues"
   },
-  "homepage": "https://github.com/titarenko/butcher"
+  "homepage": "https://github.com/titarenko/butcher",
+  "dependencies": {
+    "body": "^4.5.0"
+  }
 }
