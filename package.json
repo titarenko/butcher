@@ -1,0 +1,22 @@
+{
+  "name": "butcher",
+  "version": "0.1.0",
+  "description": "Simple node.js deployments triggered by push to GitHub.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/titarenko/butcher.git"
+  },
+  "keywords": [
+    "deployment"
+  ],
+  "author": "Constantin Titarenko",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/titarenko/butcher/issues"
+  },
+  "homepage": "https://github.com/titarenko/butcher"
+}
