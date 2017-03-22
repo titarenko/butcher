@@ -6,12 +6,12 @@ const readFile = Promise.promisify(fs.readFile, { context: fs })
 
 module.exports = execute
 
-function execute ({ repository: { name, url }, branch, command, onFeedback }) {
-	const location = `/var/butcher/${name}`
-	return cloneFetch(url, location)
-		.then(() => copyCheckoutFinallyPull(location, branch))
-		.then(() => readExecute(location, branch, command, onFeedback))
-		.tap(() => command == 'delete' ? remove(location, branch) : undefined)
+function execute ({ command, onFeedback }) {
+	const location = `/var/lib/butcher/${name}`
+	return cloneFetch(command.repository.url, location)
+		.then(() => copyCheckoutFinallyPull(location, command.branch))
+		.then(() => readExecute(location, command, onFeedback))
+		.then(() => command.stage == 'clear' ? remove(location, command.branch) : undefined)
 }
 
 function cloneFinallyFetch (url, location) {
@@ -30,11 +30,11 @@ function copyCheckoutFinallyPull (location, branch) {
 		.finally(() => run(branchLocation, 'git', 'pull'))
 }
 
-function readExecute (location, branch, commandName, onFeedback) {
+function readExecute (location, { branch, stage }, onFeedback) {
 	const branchLocation = `${location}/${branch}`
 	return readFile(`${branchLocation}/.butcher.json`, 'utf-8')
 		.then(JSON.parse)
-		.then(config => config[commandName])
+		.then(config => config[stage])
 		.then(command => runWithFeedback(onFeedback, branchLocation, ...command))
 }
 
@@ -57,7 +57,7 @@ function runWithFeedback (onFeedback, cwd, ...args) {
 			if (code == 0) {
 				resolve()
 			} else {
-				reject(new Error(String(code)))
+				reject(new Error(`command ${args.join(' ')} exited with code ${code}`))
 			}
 		})
 	})
