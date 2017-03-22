@@ -1,6 +1,11 @@
 const net = require('net')
+const Promise = require('bluebird')
+
+Promise.longStackTraces()
+
 const execute = require('./execute')
 const log = require('totlog')(__filename)
+
 const { host, port, role, password, repository, branch } = require('./config')
 
 const client = new net.Socket()
