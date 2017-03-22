@@ -1,8 +1,8 @@
 const crypto = require('crypto')
 const { validation, security } = require('buhoi')
 
-const pg = require('../pg')
-const bus = require('../bus')
+const pg = require('../../pg')
+const bus = require('../../bus')
 const config = require('../config')
 
 // 'https://developer.github.com/v3/repos/hooks/#create-a-hook'

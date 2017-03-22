@@ -4,7 +4,10 @@
   "description": "Simple node.js deployments triggered by push to GitHub.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "agent": "nodemon ./agent",
+    "web-app": "webpack-dev-server --inline --hot --config ./dashboard/web-app/webpack.config.js",
+    "engine": "nodemon ./dashboard",
+    "start": "sh scripts.sh start"
   },
   "repository": {
     "type": "git",
@@ -20,8 +23,17 @@
   },
   "homepage": "https://github.com/titarenko/butcher",
   "dependencies": {
+    "babel-loader": "^6.4.1",
     "body": "^4.5.0",
     "buhoi": "^1.0.1",
-    "totlog": "^1.0.2"
+    "buhoi-client": "^1.0.4",
+    "buhoi-ui": "^1.0.1",
+    "css-loader": "^0.27.3",
+    "knex": "^0.12.8",
+    "pg": "^6.1.5",
+    "sass-loader": "^6.0.3",
+    "style-loader": "^0.16.0",
+    "totlog": "^1.0.2",
+    "webpack": "^2.3.1"
   }
 }

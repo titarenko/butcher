@@ -6,9 +6,9 @@ const executions = require('./executions')
 module.exports = { handleGithubEvent }
 
 function handleGithubEvent (ev) {
-	const handler = findHandler(ev)
+	const handler = findHandler(ev.body)
 	if (handler) {
-		handler(ev).catch(error => log.error('event %j not handled due to %s', ev, error.stack))
+		handler(ev.body).catch(error => log.error('event %j not handled due to %s', ev, error.stack))
 	} else {
 		log.debug('event %j skipped since there is no handler for it', ev)
 	}
