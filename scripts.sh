@@ -1,5 +1,9 @@
 #!/bin/sh
 
+set -e
+
+DIR=$(dirname "$0")
+
 COMMAND=$1
 
 if [ "$COMMAND" = "start" ]; then
@@ -10,6 +14,22 @@ if [ "$COMMAND" = "start" ]; then
 
 elif [ "$COMMAND" = "build" ]; then
 
-	echo "TODO build"
+	docker build --tag titarenko/butcher-agent $DIR/agent
+	docker build --tag titarenko/butcher-dashboard $DIR/dashboard
+
+elif [ "$COMMAND" = "run-agent" ]; then
+
+	docker run \
+		--volume /var/run/docker.sock:/var/run/docker.sock:ro \
+		--volume /var/lib/butcher:/home/ev/.butcher \
+		--detach \
+		--env "BUTCHER_CONNECTION=$BUTCHER_CONNECTION" \
+		--name butcher-agent \
+		titarenko/butcher-agent
+	docker logs --follow --timestamps butcher-agent
+
+elif [ "$COMMAND" = "run" ]; then
+
+	echo "TODO run"
 
 fi
