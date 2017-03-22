@@ -57,8 +57,8 @@ client.on('error', error => {
 })
 
 function shutdown () {
-	log.debug('shutting down')
 	if (!client.destroyed) {
+		log.debug('shutting down')
 		client.destroy()
 	}
 }

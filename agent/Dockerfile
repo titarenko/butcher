@@ -3,10 +3,10 @@ FROM node:boron
 ENV NODE_ENV production
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update && apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian jessie stable"
-RUN apt-get update && apt-get install -y git docker-ce
+RUN apt-get install -y git
+
+RUN curl -fsSLO https://get.docker.com/builds/Linux/x86_64/docker-17.03.0-ce.tgz && \
+	tar --strip-components=1 -xvzf docker-17.03.0-ce.tgz -C /usr/local/bin
 
 WORKDIR /srv
 
