@@ -2,11 +2,13 @@ const net = require('net')
 const agents = require('./agents')
 const log = require('totlog')(__filename)
 
-const server = net.createServer(socket => {
-	socket.addListener('data', data => authenticate(socket, data))
-})
+module.exports = { create }
 
-server.listen(3001, 'localhost')
+function create () {
+	return net.createServer(socket => {
+		socket.addListener('data', data => authenticate(socket, data))
+	})
+}
 
 function authenticate (data) {
 	const command = JSON.parse(data.toString())

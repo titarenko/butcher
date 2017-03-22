@@ -4,7 +4,10 @@ module.exports = { create }
 
 function create (branchObject, command) {
 	return createExecution(branchObject, command)
-		.tap(it => agents.find(command).execute(command, data => updateExecution(it, data)))
+		.tap(it => agents.find(command).execute(
+			{ ...command, execution: it.id },
+			data => updateExecution(it, data)
+		))
 		.tap(it => finalizeExecution(it))
 }
 

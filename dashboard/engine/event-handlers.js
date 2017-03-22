@@ -3,7 +3,9 @@ const log = require('totlog')(__filename)
 
 const executions = require('./executions')
 
-bus.on('github event', ev => {
+module.exports = { handleGithubEvent }
+
+function handleGithubEvent (ev) {
 	const handler = findHandler(ev)
 	if (handler) {
 		handler(ev).catch(error => log.error('event %j not handled due to %s', ev, error.stack))
@@ -13,11 +15,10 @@ bus.on('github event', ev => {
 })
 
 function findHandler (ev) {
-	if (ev.ref) {
-		return ev.after == '0000000000000000000000000000000000000000'
-			? handleDelete
-			: handlePush
+	if (!ev.ref) {
+		return
 	}
+	return ev.after == '0000000000000000000000000000000000000000' ? handleDelete : handlePush
 }
 
 function handlePush (ev) {
