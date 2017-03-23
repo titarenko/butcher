@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "agent": "nodemon ./agent",
-    "web-app": "webpack-dev-server --inline --hot --config ./dashboard/web-app/webpack.config.js",
-    "engine": "nodemon ./dashboard",
+    "web-app": "nodemon ./web-app & webpack-dev-server --inline --hot --config ./web-app/webpack.config.js",
     "start": "sh scripts.sh start"
   },
   "repository": {
@@ -25,10 +24,13 @@
   "dependencies": {
     "babel-loader": "^6.4.1",
     "body": "^4.5.0",
+    "body-parser": "^1.17.1",
     "buhoi": "^1.0.1",
     "buhoi-client": "^1.0.4",
     "buhoi-ui": "^1.0.1",
+    "cookie-parser": "^1.4.3",
     "css-loader": "^0.27.3",
+    "express": "^4.15.2",
     "knex": "^0.12.8",
     "pg": "^6.1.5",
     "sass-loader": "^6.0.3",

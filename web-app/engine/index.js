@@ -2,9 +2,9 @@ const bus = require('../bus')
 const { handleGithubEvent } = require('./event-handlers')
 const server = require('./server')
 
-module.exports = { start }
+module.exports = { listen }
 
-function start () {
+function listen (port) {
 	bus.on('github event', handleGithubEvent)
-	server.create().listen(3002, 'localhost')
+	server.create().listen(port)
 }

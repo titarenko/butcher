@@ -8,14 +8,22 @@ COMMAND=$1
 
 if [ "$COMMAND" = "start" ]; then
 
-	npm run agent & \
-	npm run web-app & \
-	npm run engine
+	docker build --tag titarenko/butcher-pg $DIR/sql
+	docker stop butcher-pg || true && docker rm butcher-pg || true
+	docker run --detach --name butcher-pg titarenko/butcher-pg
+
+	BUTCHER_PG_HOST=$(docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" butcher-pg)
+
+	export BUTCHER_PG="postgres://butcher:butcher@$BUTCHER_PG_HOST/butcher"
+	export BUTCHER_WEB_APP_SECRET="c37649ab-e42f-4527-a019-1e7a49dc05cf"
+	export BUTCHER_GITHUB_SECRET="be411475-5024-41bd-866a-d98e9f0678e9"
+
+	npm run agent & npm run web-app
 
 elif [ "$COMMAND" = "build" ]; then
 
 	docker build --tag titarenko/butcher-agent $DIR/agent
-	docker build --tag titarenko/butcher-dashboard $DIR/dashboard
+	docker build --tag titarenko/butcher-app $DIR/app
 
 elif [ "$COMMAND" = "run-agent" ]; then
 

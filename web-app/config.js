@@ -1,6 +1,11 @@
-const secret = process.env.BUTCHER_SECRET
-if (!secret) {
-	throw new Error('BUTCHER_SECRET is missing'))
+const gitHubSecret = process.env.BUTCHER_GITHUB_SECRET
+if (!gitHubSecret) {
+	throw new Error('BUTCHER_GITHUB_SECRET is missing')
+}
+
+const webAppSecret = process.env.BUTCHER_WEB_APP_SECRET
+if (!webAppSecret) {
+	throw new Error('BUTCHER_WEB_APP_SECRET is missing')
 }
 
 const connection = process.env.BUTCHER_PG
@@ -13,5 +18,6 @@ module.exports = {
 		connection,
 		client: 'pg',
 	},
-	github: { secret },
+	gitHub: { gitHubSecret },
+	webApp: { webAppSecret },
 }

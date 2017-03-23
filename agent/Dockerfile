@@ -17,4 +17,4 @@ COPY . .
 STOPSIGNAL SIGINT
 
 ENTRYPOINT ["node"]
-CMD ["./index.js"]
+CMD ["./"]
