@@ -1,4 +1,5 @@
 const execute = require('./execute')
+const log = require('totlog')(__filename)
 const { repository, branch } = require('./config')
 
 module.exports = handle
@@ -19,13 +20,13 @@ function handle (data, send) {
 		.catch(handleFailure)
 
 	function handleFeedback (command, data) {
-		client.send({ type: 'FEEDBACK', command, data })
+		send({ type: 'FEEDBACK', command, data })
 	}
 
 	function handleFailure (error) {
 		log.error(`failed to execute ${commandText} due to ${error.stack}`)
 		try {
-			client.send({ type: 'FAILURE', command: JSON.parse(commandText) })
+			send({ type: 'FAILURE', command: JSON.parse(commandText) })
 		} catch (sendError) {
 			log.error(`failed to send failure due to ${sendError.stack}`)
 		}

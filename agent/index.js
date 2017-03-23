@@ -1,4 +1,5 @@
 const Promise = require('bluebird')
+const net = require('net')
 const handle = require('./handle')
 const log = require('totlog')(__filename)
 const { host, port, role, password, repository, branch } = require('./config')
@@ -16,7 +17,13 @@ client.on('error', error => {
 
 client.connect(port, host, () => {
 	log.debug(`connected to ${host}:${port}`)
-	send({ type: 'AUTHENTICATE', role, password, repository, branch })
+	send({
+		type: 'AUTHENTICATE',
+		role,
+		password,
+		repository,
+		branch,
+	})
 })
 
 function send (message) {

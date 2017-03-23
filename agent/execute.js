@@ -7,8 +7,8 @@ const readFile = Promise.promisify(fs.readFile, { context: fs })
 module.exports = execute
 
 function execute ({ command, onFeedback }) {
-	const location = `/var/lib/butcher/${name}`
-	return cloneFetch(command.repository.url, location)
+	const location = `/var/lib/butcher/${command.repository.name}`
+	return cloneFinallyFetch(command.repository.url, location)
 		.then(() => copyCheckoutFinallyPull(location, command.branch))
 		.then(() => readExecute(location, command, onFeedback))
 		.then(() => command.stage == 'clear' ? remove(location, command.branch) : undefined)
