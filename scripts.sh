@@ -14,13 +14,14 @@ if [ "$COMMAND" = "start" ]; then
 
 	BUTCHER_PG_HOST=$(docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" butcher-pg)
 
+	export NODE_ENV=development
+
+	export BUTCHER="build:password@localhost:3002"
 	export BUTCHER_PG="postgres://butcher:butcher@$BUTCHER_PG_HOST/butcher"
 	export BUTCHER_WEB_APP_SECRET="c37649ab-e42f-4527-a019-1e7a49dc05cf"
 	export BUTCHER_GITHUB_SECRET="be411475-5024-41bd-866a-d98e9f0678e9"
 
-	export NODE_ENV=development
-
-	npm run agent & npm run web-app
+	npm run app & npm run agent
 
 elif [ "$COMMAND" = "build" ]; then
 

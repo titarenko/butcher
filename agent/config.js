@@ -1,25 +1,25 @@
-const connectionString = process.env.BUTCHER_CONNECTION
+const connectionString = process.env.BUTCHER
 
 if (!connectionString) {
-	throw new Error('BUTCHER_CONNECTION is not specified')
+	throw new Error('BUTCHER is not specified')
 }
 
 const [role, password, host, port, repository, branch] = connectionString.split(/[@/:]/)
 
 if (!role) {
-	throw new Error('BUTCHER_CONNECTION does not contain role')
+	throw new Error('BUTCHER does not contain role')
 }
 
 if (!password) {
-	throw new Error('BUTCHER_CONNECTION does not contain password')
+	throw new Error('BUTCHER does not contain password')
 }
 
 if (!host) {
-	throw new Error('BUTCHER_CONNECTION does not contain host')
+	throw new Error('BUTCHER does not contain host')
 }
 
 if (!port) {
-	throw new Error('BUTCHER_CONNECTION does not contain port')
+	throw new Error('BUTCHER does not contain port')
 }
 
 module.exports = {

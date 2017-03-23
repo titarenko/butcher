@@ -25,10 +25,18 @@ function verifyCredentials ({ role, password, repository, branch }) {
 	return pg('credentials')
 		.where({ role, password })
 		.where(function () {
-			this.whereNull('repository').orWhere({ repository })
+			if (repository) {
+				this.whereNull('repository').orWhere({ repository })
+			} else {
+				this.whereNull('repository')
+			}
 		})
 		.where(function () {
-			this.whereNull('branch').orWhere({ branch })
+			if (branch) {
+				this.whereNull('branch').orWhere({ branch })
+			} else {
+				this.whereNull('branch')
+			}
 		})
 		.first()
 		.then(Boolean)
