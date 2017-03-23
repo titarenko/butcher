@@ -3,7 +3,7 @@ const { validation, security } = require('buhoi')
 
 const pg = require('../../pg')
 const bus = require('../../bus')
-const config = require('../config')
+const config = require('../../config')
 
 // 'https://developer.github.com/v3/repos/hooks/#create-a-hook'
 
@@ -17,7 +17,7 @@ function validate (params, req) {
 
 	const actualHash = header.slice(5)
 	const expectedHash = crypto
-		.createHmac('sha1', config.github.secret)
+		.createHmac('sha1', config.gitHub.secret)
 		.update(req.rawBody)
 		.digest('hex')
 

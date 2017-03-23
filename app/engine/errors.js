@@ -2,7 +2,7 @@ const util = require('util')
 
 module.exports = { NoObjectError }
 
-function NoObjectError(entity, name) {
+function NoObjectError (entity, name) {
 	Error.call(this)
 	Error.captureStackTrace(this, NoObjectError)
 	this.entity = entity

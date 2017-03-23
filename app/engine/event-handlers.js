@@ -1,7 +1,7 @@
-const bus = require('../web-app/bus')
-const log = require('totlog')(__filename)
-
+const branches = require('./branches')
 const executions = require('./executions')
+const { NoObjectError } = require('./errors')
+const log = require('totlog')(__filename)
 
 module.exports = { handleGithubEvent }
 
@@ -12,7 +12,7 @@ function handleGithubEvent (ev) {
 	} else {
 		log.debug('event %j skipped since there is no handler for it', ev)
 	}
-})
+}
 
 function findHandler (ev) {
 	if (!ev.ref) {

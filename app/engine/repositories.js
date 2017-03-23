@@ -1,3 +1,4 @@
+const pg = require('../pg')
 const { NoObjectError } = require('./errors')
 
 module.exports = { find, create }

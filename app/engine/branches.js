@@ -1,3 +1,4 @@
+const pg = require('../pg')
 const repositories = require('./repositories')
 const { NoObjectError } = require('./errors')
 

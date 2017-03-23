@@ -38,8 +38,8 @@ function createAgent (socket) {
 function execute (socket, command, onFeedback, resolve, reject) {
 	socket.addListener('data', handleUpdate)
 	socket.write(JSON.stringify({ type: 'EXECUTE', command }))
-	function handleUpdate (data) {
-		const { type, command: { execution }, data, error } = JSON.parse(data.toString())
+	function handleUpdate (buffer) {
+		const { type, command: { execution }, data, error } = JSON.parse(buffer.toString())
 		if (execution != command.execution) {
 			return
 		}

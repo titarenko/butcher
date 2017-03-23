@@ -1,4 +1,5 @@
 const net = require('net')
+const pg = require('../pg')
 const agents = require('./agents')
 const log = require('totlog')(__filename)
 
@@ -10,15 +11,14 @@ function create () {
 	})
 }
 
-function authenticate (data) {
+function authenticate (socket, data) {
 	const command = JSON.parse(data.toString())
-	const { type, role, password, repository, branch } = command
-	if (type != 'AUTHENTICATE') {
+	if (command.type != 'AUTHENTICATE') {
 		return
 	}
 	verifyCredentials(command)
 		.then(valid => valid ? addAgent(socket) : undefined)
-		.catch(e => log.error(`authentication interrupted due to ${error.stack}`))
+		.catch(error => log.error(`authentication interrupted due to ${error.stack}`))
 }
 
 function verifyCredentials ({ role, password, repository, branch }) {
