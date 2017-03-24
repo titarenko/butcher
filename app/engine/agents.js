@@ -45,10 +45,10 @@ function execute (socket, command, onFeedback, resolve, reject) {
 		}
 		if (type == 'FEEDBACK') {
 			onFeedback(data)
-		} else if (type == 'FINISH') {
+		} else if (type == 'SUCCESS') {
 			socket.removeListener('data', handleUpdate)
 			resolve()
-		} else if (type == 'ERROR') {
+		} else if (type == 'FAILURE') {
 			socket.removeListener('data', handleUpdate)
 			reject(new Error(error))
 		}

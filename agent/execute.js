@@ -12,6 +12,7 @@ function execute ({ command, onFeedback }) {
 		.then(() => copyCheckoutFinallyPull(location, command.branch))
 		.then(() => readExecute(location, command, onFeedback))
 		.then(() => command.stage == 'clear' ? remove(location, command.branch) : undefined)
+		.return(command)
 }
 
 function cloneFinallyFetch (url, location) {

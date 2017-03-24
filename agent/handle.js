@@ -17,6 +17,7 @@ function handle (data, send) {
 			return command
 		})
 		.then(command => execute({ command, onFeedback: data => handleFeedback(command, data) }))
+		.then(command => send({ type: 'SUCCESS', command }))
 		.catch(handleFailure)
 
 	function handleFeedback (command, data) {
