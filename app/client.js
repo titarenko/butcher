@@ -1,7 +1,7 @@
 const { start } = require('buhoi-client')
 
 start({
-	createContext: require.context(`${__dirname}/pages`, true, /\.jsx$/),
+	createContext: () => require.context('./pages', true, /\.jsx$/),
 	acceptHotUpdate: module.hot && module.hot.accept,
 	defaultRoute: { entity: 'monitor' },
 })

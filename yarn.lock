@@ -1029,15 +1029,16 @@ buhoi-ui@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/buhoi-ui/-/buhoi-ui-1.0.1.tgz#a6b784de3ccf6010248c6ae332eadc613084a95c"
 
-buhoi@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/buhoi/-/buhoi-1.0.1.tgz#18d331f657467589337175832329c6fc7ba350d9"
+buhoi@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/buhoi/-/buhoi-1.0.3.tgz#9e1cf645158555de77cf26f9baa92fb4f6dccb34"
   dependencies:
     bcryptjs "^2.3.0"
     bluebird "^3.4.6"
-    colors "^1.1.2"
     http-shutdown "^1.2.0"
     jsonwebtoken "^7.3.0"
+    korrekt "^1.2.3"
+    totlog "^1.0.2"
 
 builtin-modules@^1.0.0, builtin-modules@^1.1.1:
   version "1.1.1"

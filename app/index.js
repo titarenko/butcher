@@ -21,7 +21,7 @@ const app = express()
 app.use(cookieParser())
 app.use(authentication)
 app.use(bodyParser.json({ verify: assignRawBody }))
-app.use(router({ basePath: `${__dirname}/pages` }))
+app.use('/api', router({ basePath: `${__dirname}/pages` }))
 app.use(express.static(`${__dirname}/static`))
 app.use(fallback)
 
