@@ -1,5 +1,6 @@
 const Promise = require('bluebird')
 const net = require('net')
+const os = require('os')
 const handle = require('./handle')
 const log = require('totlog')(__filename)
 const { host, port, role, password, repository, branch } = require('./config')
@@ -19,6 +20,7 @@ client.connect(port, host, () => {
 	log.debug(`connected to ${host}:${port}`)
 	send({
 		type: 'AUTHENTICATE',
+		name: os.hostname(),
 		role,
 		password,
 		repository,

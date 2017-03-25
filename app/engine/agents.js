@@ -1,9 +1,14 @@
 const Promise = require('bluebird')
 const { NoObjectError } = require('./errors')
+const _ = require('lodash')
 
 const agents = []
 
-module.exports = { find, add, remove }
+module.exports = { list, find, add, remove }
+
+function list () {
+	return agents.map(it => _.pick(it, ['ip', 'name', 'role', 'repository', 'branch']))
+}
 
 function find (command) {
 	const agent = agents
@@ -16,8 +21,8 @@ function find (command) {
 	return agent
 }
 
-function add (socket) {
-	agents.push(createAgent(socket))
+function add (socket, props) {
+	agents.push(createAgent(socket, props))
 }
 
 function remove (socket) {
@@ -27,12 +32,12 @@ function remove (socket) {
 	}
 }
 
-function createAgent (socket) {
-	return {
+function createAgent (socket, props) {
+	return Object.assign({ socket, ip: socket.remoteAddress }, props, {
 		execute: (command, onFeedback) => new Promise((resolve, reject) =>
 			execute(socket, command, onFeedback, resolve, reject)
 		),
-	}
+	})
 }
 
 function execute (socket, command, onFeedback, resolve, reject) {

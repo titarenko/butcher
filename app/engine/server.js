@@ -13,11 +13,12 @@ function create () {
 
 function authenticate (socket, data) {
 	const command = JSON.parse(data.toString())
-	if (command.type != 'AUTHENTICATE') {
+	const { type, name, role, repository, branch } = command
+	if (type != 'AUTHENTICATE') {
 		return
 	}
 	verifyCredentials(command)
-		.then(valid => valid ? addAgent(socket) : undefined)
+		.then(valid => valid ? addAgent(socket, { name, role, repository, branch }) : undefined)
 		.catch(error => log.error(`authentication interrupted due to ${error.stack}`))
 }
 
@@ -42,7 +43,7 @@ function verifyCredentials ({ role, password, repository, branch }) {
 		.then(Boolean)
 }
 
-function addAgent (socket) {
+function addAgent (socket, props) {
 	socket.removeListener('data', authenticate)
 
 	socket.on('close', () => agents.remove(socket))
@@ -52,5 +53,5 @@ function addAgent (socket) {
 		socket.destroy()
 	})
 
-	agents.add(socket)
+	agents.add(socket, props)
 }
