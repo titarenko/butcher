@@ -1,0 +1,1 @@
+insert into credentials (role, password) values ('build', 'password');

@@ -38,4 +38,5 @@ function shutdown () {
 		log.debug('shutting down')
 		client.destroy()
 	}
+	process.nextTick(() => process.exit(1))
 }

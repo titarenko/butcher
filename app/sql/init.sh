@@ -16,6 +16,11 @@ create database butcher template template0 owner root
 
 set role root;
 
+create table migrations (
+	name text primary key,
+	applied_at timestamptz not null default now()
+);
+
 grant connect on database butcher to butcher;
 
 EndOfMessage
