@@ -7,12 +7,13 @@ require('./style.scss')
 
 module.exports = Monitor
 module.exports.reducer = combineReducers({
-	agents: createReducer('agents', List.reducer),
 	repositories: createReducer('repositories', List.reducer),
 	branches: createReducer('branches', List.reducer),
+	executions: createReducer('executions', List.reducer),
+	agents: createReducer('agents', List.reducer),
 })
 
-function Monitor ({ agents, repositories, branches, dispatch }) {
+function Monitor ({ repositories, branches, executions, agents, dispatch }) {
 	return <div className="monitor">
 		<section>
 			<h2>repositories</h2>
@@ -31,6 +32,14 @@ function Monitor ({ agents, repositories, branches, dispatch }) {
 				dispatch={createDispatch('branches', dispatch)} />
 		</section>
 		<section>
+			<h2>executions</h2>
+			<List
+				{...executions}
+				resource="/api/monitor.executions"
+				Table={Executions}
+				dispatch={createDispatch('executions', dispatch)} />
+		</section>
+		<section>
 			<h2>agents</h2>
 			<List
 				{...agents}
@@ -39,6 +48,25 @@ function Monitor ({ agents, repositories, branches, dispatch }) {
 				dispatch={createDispatch('agents', dispatch)} />
 		</section>
 	</div>
+
+	function Executions ({ items }) {
+		return <table>
+			<thead>
+				<tr>
+					<th>start</th>
+					<th>update</th>
+					<th>finish</th>
+					<th>feedback</th>
+				</tr>
+			</thead>
+			<tbody>{items.map(it => <tr>
+				<td>{moment(it.created_at).format('MMM DD, HH:mm')}</td>
+				<td>{moment(it.updated_at).format('mm:ss')}</td>
+				<td>{moment(it.finished_at).format('mm:ss')}</td>
+				<td>{it.feedback}</td>
+			</tr>)}</tbody>
+		</table>
+	}
 
 	function Agents ({ items }) {
 		return <table>

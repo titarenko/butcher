@@ -1,6 +1,7 @@
 const Promise = require('bluebird')
-const { NoObjectError } = require('./errors')
+const { NoAgentError } = require('./errors')
 const _ = require('lodash')
+const log = require('totlog')(__filename)
 
 const agents = []
 
@@ -16,7 +17,7 @@ function find (command) {
 			&& (!it.branch || it.branch == command.branch)
 		)[0]
 	if (!agent) {
-		throw new NoObjectError('agent', command)
+		throw new NoAgentError(command)
 	}
 	return agent
 }
@@ -44,6 +45,7 @@ function execute (socket, command, onFeedback, resolve, reject) {
 	socket.addListener('data', handleUpdate)
 	socket.write(JSON.stringify({ type: 'EXECUTE', command }))
 	function handleUpdate (buffer) {
+		log.debug('got feedback %s on %j', buffer.toString(), command)
 		const { type, command: { execution }, data, error } = JSON.parse(buffer.toString())
 		if (execution != command.execution) {
 			return

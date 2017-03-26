@@ -5,5 +5,5 @@ module.exports = {
 	agents: () => agents.list(),
 	repositories: () => pg('repositories').orderBy('updated_at', 'desc'),
 	branches: () => pg('branches').orderBy('updated_at', 'desc'),
-
+	executions: () => pg('executions').orderBy('updated_at', 'desc'),
 }

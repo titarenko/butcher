@@ -1,6 +1,6 @@
 const pg = require('../pg')
 const repositories = require('./repositories')
-const { NoObjectError } = require('./errors')
+const { NoRepositoryError, NoBranchError } = require('./errors')
 
 module.exports = { find, create }
 
@@ -15,14 +15,14 @@ function find (repositoryName, branchName) {
 		.first()
 		.then(it => {
 			if (!it) {
-				throw new NoObjectError('branch', branchName)
+				throw new NoBranchError(branchName)
 			}
 			return it
 		})
 }
 
-function create (repositoryName, branchName) {
-	return repositories.find(repositoryName)
+function create (repository, branchName) {
+	return repositories.find(repository.name)
 		.then(it => pg('branches')
 			.insert({
 				repository_id: it.id,
@@ -30,7 +30,7 @@ function create (repositoryName, branchName) {
 				created_at: new Date(),
 			})
 		)
-		.catch(NoObjectError, () => repositories.create(repositoryName)
-			.then(() => create(repositoryName, branchName))
+		.catch(NoRepositoryError, () => repositories.create(repository)
+			.then(() => create(repository, branchName))
 		)
 }

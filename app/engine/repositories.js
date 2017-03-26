@@ -1,5 +1,5 @@
 const pg = require('../pg')
-const { NoObjectError } = require('./errors')
+const { NoRepositoryError } = require('./errors')
 
 module.exports = { find, create }
 
@@ -9,15 +9,12 @@ function find (name) {
 		.first()
 		.then(it => {
 			if (!it) {
-				throw new NoObjectError('repository', name)
+				throw new NoRepositoryError(name)
 			}
 			return it
 		})
 }
 
-function create (repositoryName) {
-	return pg('repositories').insert({
-		name: repositoryName,
-		created_at: new Date(),
-	})
+function create ({ name, url, ssh }) {
+	return pg('repositories').insert({ name, url, ssh })
 }

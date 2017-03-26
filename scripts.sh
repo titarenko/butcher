@@ -55,4 +55,13 @@ elif [ "$COMMAND" = "run-app" ]; then
 
 	echo "TODO run"
 
+elif [ "$COMMAND" = "test" ]; then
+
+	curl \
+		-H "content-type: application/json" \
+		-H "x-hub-signature: sha1=cf81e911ac98f52526f9f9f08d31d3049fd584f2" \
+		-d "@ev.json" \
+		-v \
+		localhost:3000/api/events
+
 fi

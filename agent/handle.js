@@ -1,3 +1,4 @@
+const Promise = require('bluebird')
 const execute = require('./execute')
 const log = require('totlog')(__filename)
 const { repository, branch } = require('./config')
@@ -9,7 +10,7 @@ function handle (data, send) {
 
 	Promise
 		.try(() => {
-			const command = JSON.parse(commandText)
+			const { command } = JSON.parse(commandText)
 			if (repository && command.repository.name != repository
 				|| branch && command.branch != branch) {
 				throw new Error(`illegal command ${commandText}`)

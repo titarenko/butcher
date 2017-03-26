@@ -17,7 +17,6 @@ function createExecution (branchObject, command) {
 		.insert({
 			branch_id: branchObject.id,
 			command,
-			created_at: new Date(),
 		})
 		.returning('*')
 		.then(it => it[0])

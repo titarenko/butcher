@@ -1,6 +1,6 @@
 const branches = require('./branches')
 const executions = require('./executions')
-const { NoObjectError } = require('./errors')
+const { NoBranchError } = require('./errors')
 const log = require('totlog')(__filename)
 
 module.exports = { handleGithubEvent }
@@ -36,7 +36,7 @@ function handlePush (ev) {
 			commit,
 			stage: 'stage',
 		}))
-		.catch(NoObjectError, () => branches.create(repository.name, branch)
+		.catch(NoBranchError, () => branches.create(repository, branch)
 			.then(() => handlePush(ev))
 		)
 }
@@ -54,7 +54,8 @@ function handleDelete (ev) {
 function convertPushEvent (ev) {
 	const repository = {
 		name: ev.repository.name,
-		url: ev.repository.ssh_url,
+		ssh: ev.repository.ssh_url,
+		url: ev.repository.url,
 	}
 	const branch = ev.ref.slice(11)
 	const commit = ev.after

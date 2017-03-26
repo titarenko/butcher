@@ -18,6 +18,6 @@ module.exports = {
 		connection,
 		client: 'pg',
 	},
-	gitHub: { gitHubSecret },
-	webApp: { webAppSecret },
+	gitHub: { secret: gitHubSecret },
+	webApp: { secret: webAppSecret },
 }
