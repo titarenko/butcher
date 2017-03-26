@@ -1,5 +1,6 @@
 const pg = require('../pg')
 const agents = require('./agents')
+const log = require('totlog')(__filename)
 
 module.exports = { create }
 
@@ -26,13 +27,14 @@ function updateExecution (executionObject, data) {
 	return pg('executions')
 		.where({ id: executionObject.id })
 		.update({
-			feedback: pg.raw('feedback || ?', [data]),
+			feedback: pg.raw("coalesce(feedback, '') || ?", [data.toString()]),
 			updated_at: new Date(),
 		})
+		.catch(e => log.error(`failed to update execution ${executionObject.id} with ${data} due to ${e.stack}`))
 }
 
 function finalizeExecution (executionObject) {
 	return pg('executions')
 		.where({ id: executionObject.id })
-		.udpate({ finished_at: new Date() })
+		.update({ finished_at: new Date() })
 }

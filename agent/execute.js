@@ -9,29 +9,29 @@ module.exports = execute
 
 function execute ({ command, onFeedback }) {
 	const location = `/var/lib/butcher/${command.repository.name}`
-	return cloneFinallyFetch(command.repository.ssh, location)
-		.then(() => copyCheckoutFinallyPull(location, command.branch))
+	return cloneFinallyFetch(command.repository.ssh, location, onFeedback)
+		.then(() => copyCheckoutFinallyPull(location, command.branch, onFeedback))
 		.then(() => readExecute(location, command, onFeedback))
-		.then(() => command.stage == 'clear' ? remove(location, command.branch) : undefined)
+		.then(() => command.stage == 'clear' ? remove(location, command.branch, onFeedback) : undefined)
 		.return(command)
 }
 
-function cloneFinallyFetch (url, location) {
+function cloneFinallyFetch (url, location, onFeedback) {
 	const masterLocation = `${location}/master`
-	return run(undefined, 'mkdir', '-p', masterLocation)
-		.then(() => run(masterLocation, 'git', 'clone', url, '.'))
+	return run(onFeedback, undefined, 'mkdir', '-p', masterLocation)
+		.then(() => run(onFeedback, masterLocation, 'git', 'clone', url, '.'))
 		.catch(() => undefined)
-		.finally(() => run(masterLocation, 'git', 'fetch'))
+		.finally(() => run(onFeedback, masterLocation, 'git', 'fetch'))
 }
 
-function copyCheckoutFinallyPull (location, branch) {
+function copyCheckoutFinallyPull (location, branch, onFeedback) {
 	const masterLocation = `${location}/master`
 	const branchLocation = `${location}/${branch}`
-	return run(undefined, 'mkdir', '-p', branchLocation)
-		.then(() => run(undefined, 'cp', '-r', masterLocation, branchLocation))
-		.then(() => run(branchLocation, 'git', 'checkout', branch))
+	return run(onFeedback, undefined, 'mkdir', '-p', branchLocation)
+		.then(() => run(onFeedback, undefined, 'cp', '-r', masterLocation, branchLocation))
+		.then(() => run(onFeedback, branchLocation, 'git', 'checkout', branch))
 		.catch(() => undefined)
-		.finally(() => run(branchLocation, 'git', 'pull'))
+		.finally(() => run(onFeedback, branchLocation, 'git', 'pull'))
 }
 
 function readExecute (location, { branch, stage }, onFeedback) {
@@ -39,20 +39,16 @@ function readExecute (location, { branch, stage }, onFeedback) {
 	return readFile(`${branchLocation}/.butcher.json`, 'utf-8')
 		.then(JSON.parse)
 		.then(config => config[stage])
-		.then(command => runWithFeedback(onFeedback, branchLocation, ...command))
+		.then(command => command ? run(onFeedback, branchLocation, ...command) : undefined)
 }
 
-function remove (location, branch) {
-	return run(undefined, 'rm', '-rf', `${location}/${branch}`)
+function remove (location, branch, onFeedback) {
+	return run(onFeedback, undefined, 'rm', '-rf', `${location}/${branch}`)
 }
 
-function run (cwd, ...args) {
-	return runWithFeedback(undefined, cwd, ...args)
-}
-
-function runWithFeedback (onFeedback, cwd, ...args) {
+function run (onFeedback, cwd, ...args) {
 	return new Promise((resolve, reject) => {
-		log.debug(`spawning ${args.join(' ')} in ${cwd || 'current directory'}`)
+		log.debug(`running ${args.join(' ')} in ${cwd || 'current directory'}`)
 		const child = spawn(args[0], args.slice(1), { cwd })
 		let error = ''
 		if (onFeedback) {

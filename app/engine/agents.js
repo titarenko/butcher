@@ -46,8 +46,9 @@ function execute (socket, command, onFeedback, resolve, reject) {
 	socket.write(JSON.stringify({ type: 'EXECUTE', command }))
 	function handleUpdate (buffer) {
 		log.debug('got feedback %s on %j', buffer.toString(), command)
-		const { type, command: { execution }, data, error } = JSON.parse(buffer.toString())
+		const { type, execution, data, error } = JSON.parse(buffer.toString())
 		if (execution != command.execution) {
+			log.debug('skipping feedback due to execution mismatch')
 			return
 		}
 		if (type == 'FEEDBACK') {
