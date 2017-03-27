@@ -13,10 +13,13 @@ module.exports = {
 			'e.created_at as started_at',
 			'r.name as repository',
 			'b.name as branch',
-			pg.raw("command->>'commit' as commit")
+			pg.raw("command->>'commit' as commit"),
+			pg.raw('coalesce(a.name, a.ip) as agent'),
+			pg.raw("command->>'stage' as stage")
 		)
 		.join('branches as b', 'b.id', 'e.branch_id')
 		.join('repositories as r', 'r.id', 'b.repository_id')
+		.join('agents as a', 'a.id', 'e.agent_id')
 		.orderBy('e.updated_at', 'desc')
 		.limit(20),
 }

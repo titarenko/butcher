@@ -60,6 +60,8 @@ function Monitor ({ repositories, branches, executions, agents, dispatch }) {
 				<div><i className="fa fa-github" aria-hidden="true"></i> {it.repository}</div>
 				<div><i className="fa fa-code-fork" aria-hidden="true"></i> {it.branch}</div>
 				<div><i className="fa fa-hashtag" aria-hidden="true"></i> {it.commit}</div>
+				<div><i className="fa fa-cog" aria-hidden="true"></i> {it.agent}</div>
+				<div><i className="fa fa-play" aria-hidden="true"></i> {it.stage}</div>
 			</div>
 			<pre>{it.feedback}</pre>
 		</div>)}</div>
@@ -96,7 +98,7 @@ function Monitor ({ repositories, branches, executions, agents, dispatch }) {
 			</thead>
 			<tbody>{items.map(it => <tr>
 				<td>{it.name}</td>
-				<td>{moment(it.updated_at || it.created_at).format('MMM DD, HH:mm:ss')}</td>
+				<td>{moment(it.updated_at || it.created_at).format('MMM DD, HH:mm')}</td>
 			</tr>)}</tbody>
 		</table>
 	}
@@ -105,15 +107,15 @@ function Monitor ({ repositories, branches, executions, agents, dispatch }) {
 		return <table>
 			<thead>
 				<tr>
-					<th>rep.</th>
 					<th>name</th>
+					<th>rep.</th>
 					<th>last upd.</th>
 				</tr>
 			</thead>
 			<tbody>{items.map(it => <tr>
-				<td>{it.repository}</td>
 				<td>{it.name}</td>
-				<td>{moment(it.updated_at || it.created_at).format('MMM DD, HH:mm:ss')}</td>
+				<td>{it.repository}</td>
+				<td>{moment(it.updated_at || it.created_at).format('MMM DD, HH:mm')}</td>
 			</tr>)}</tbody>
 		</table>
 	}

@@ -24,36 +24,48 @@ function findHandler (ev) {
 		: handlePush
 }
 
-function handlePush (ev) {
-	const { repository, branch, commit } = convertPushEvent(ev)
+function handlePush (event) {
+	const { repository, branch, commit } = convertPushEvent(event)
 	return branches.find(repository.name, branch)
-		.tap(it => executions.create(ev, it, {
-			repository,
-			branch,
-			commit,
-			stage: 'build',
-			script: 'echo build',
+		.tap(it => executions.create({
+			event,
+			branch: it,
+			command: {
+				repository,
+				branch,
+				commit,
+				stage: 'build',
+				script: 'echo build',
+			},
 		}))
-		.tap(it => executions.create(ev, it, {
-			repository,
-			branch,
-			commit,
-			stage: 'stage',
-			script: 'echo stage',
+		.tap(it => executions.create({
+			event,
+			branch: it,
+			command: {
+				repository,
+				branch,
+				commit,
+				stage: 'stage',
+				script: 'echo stage',
+			},
 		}))
 		.catch(NoBranchError, () => branches.create(repository, branch)
-			.then(() => handlePush(ev))
+			.then(() => handlePush(event))
 		)
 }
 
-function handleDelete (ev) {
-	const { repository, branch } = convertPushEvent(ev)
+function handleDelete (event) {
+	const { repository, branch } = convertPushEvent(event)
 	return branches.find(repository.name, branch)
-		.tap(it => executions.create(ev, it, {
-			repository,
-			branch,
-			stage: 'remove',
-			script: 'echo remove',
+		.tap(it => executions.create({
+			event,
+			branch: it,
+			command: {
+				repository,
+				branch,
+				stage: 'remove',
+				script: 'echo remove',
+			},
 		}))
 }
 

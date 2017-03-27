@@ -14,6 +14,7 @@ create table executions (
 
 	event_id int references events not null,
 	branch_id smallint references branches not null,
+	agent_id smallint references agents not null,
 
 	command jsonb not null,
 	feedback text,

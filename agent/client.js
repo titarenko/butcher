@@ -3,11 +3,11 @@ const log = require('totlog')(__filename)
 
 module.exports = { create }
 
-function create ({ host, port, onConnection, onCommand, onError }) {
+function create ({ onConnection, onCommand, onError }) {
 	const client = new net.Socket()
 
 	client.on('connect', () => {
-		log.debug(`connected to ${host}:${port}`)
+		log.debug(`connected to ${client.remoteAddress}:${client.remotePort}`)
 		onConnection()
 	})
 
@@ -24,7 +24,7 @@ function create ({ host, port, onConnection, onCommand, onError }) {
 
 	return {
 		connect: ({ host, port }) => {
-			log.debug(`connecting to ${port}:${host}`)
+			log.debug(`connecting to ${host}:${port}`)
 			client.connect(port, host)
 		},
 		send: command => {

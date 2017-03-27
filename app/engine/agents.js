@@ -51,15 +51,17 @@ function remove (socket) {
 }
 
 function find (command) {
-	const agent = agents
-		.filter(it => (!it.repository || it.repository == command.repository.name)
-			&& (!it.branch || it.branch == command.branch)
-			&& (!it.stage || it.stage == command.stage)
-		)[0]
-	if (!agent) {
-		throw new NoAgentError(command)
-	}
-	return agent
+	return Promise.try(() => {
+		const agent = agents
+			.filter(it => (!it.repository || it.repository == command.repository.name)
+				&& (!it.branch || it.branch == command.branch)
+				&& (!it.stage || it.stage == command.stage)
+			)[0]
+		if (!agent) {
+			throw new NoAgentError(command)
+		}
+		return agent
+	})
 }
 
 function createAgent (socket, props) {
