@@ -1,32 +1,20 @@
-const connectionString = process.env.BUTCHER
+const Promise = require('bluebird')
+const os = require('os')
 
-if (!connectionString) {
-	throw new Error('BUTCHER is not specified')
-}
+module.exports = { parse }
 
-const [role, password, host, port, repository, branch] = connectionString.split(/[@/:]/)
+function parse () {
+	return Promise.try(() => {
+		const connection = process.argv[2] || process.env.BUTCHER
+		if (!connection) {
+			throw new Error('connection is missing, must be passed as first argument or BUTCHER environment variable')
+		}
 
-if (!role) {
-	throw new Error('BUTCHER does not contain role')
-}
+		const [ token, host, port ] = connection.split(/[@:]/)
+		if (!token || !host || !port) {
+			throw new Error('connection is malformed, must be token@host:port')
+		}
 
-if (!password) {
-	throw new Error('BUTCHER does not contain password')
-}
-
-if (!host) {
-	throw new Error('BUTCHER does not contain host')
-}
-
-if (!port) {
-	throw new Error('BUTCHER does not contain port')
-}
-
-module.exports = {
-	role,
-	password,
-	host,
-	port,
-	repository,
-	branch,
+		return { name: os.hostname(), token, host, port }
+	})
 }

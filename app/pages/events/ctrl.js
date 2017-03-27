@@ -5,9 +5,9 @@ const pg = require('../../pg')
 const bus = require('../../bus')
 const config = require('../../config')
 
-// 'https://developer.github.com/v3/repos/hooks/#create-a-hook'
-
 module.exports = { create: security.bypass(validate, create) }
+
+// 'https://developer.github.com/v3/repos/hooks/#create-a-hook'
 
 function validate (params, req) {
 	const header = req.headers['x-hub-signature']

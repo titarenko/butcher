@@ -1,1 +1,1 @@
-insert into credentials (role, password) values ('build', 'password');
+insert into agents (token) values ('token');

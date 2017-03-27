@@ -6,35 +6,40 @@ const log = require('totlog')(__filename)
 module.exports = { handleGithubEvent }
 
 function handleGithubEvent (ev) {
-	const handler = findHandler(ev.body)
+	const handler = findHandler(ev)
 	if (handler) {
-		handler(ev.body).catch(error => log.error('event %j not handled due to %s', ev, error.stack))
+		handler(ev)
+			.catch(error => log.error('event %d is not handled due to %s', ev.id, error.stack))
 	} else {
-		log.debug('event %j skipped since there is no handler for it', ev)
+		log.debug('event %j is skipped since there is no handler for it', ev)
 	}
 }
 
 function findHandler (ev) {
-	if (!ev.ref) {
+	if (!ev.body.ref) {
 		return
 	}
-	return ev.after == '0000000000000000000000000000000000000000' ? handleDelete : handlePush
+	return ev.body.after == '0000000000000000000000000000000000000000'
+		? handleDelete
+		: handlePush
 }
 
 function handlePush (ev) {
 	const { repository, branch, commit } = convertPushEvent(ev)
 	return branches.find(repository.name, branch)
-		.tap(it => executions.create(it, {
+		.tap(it => executions.create(ev, it, {
 			repository,
 			branch,
 			commit,
 			stage: 'build',
+			script: 'echo build',
 		}))
-		.tap(it => executions.create(it, {
+		.tap(it => executions.create(ev, it, {
 			repository,
 			branch,
 			commit,
 			stage: 'stage',
+			script: 'echo stage',
 		}))
 		.catch(NoBranchError, () => branches.create(repository, branch)
 			.then(() => handlePush(ev))
@@ -44,20 +49,22 @@ function handlePush (ev) {
 function handleDelete (ev) {
 	const { repository, branch } = convertPushEvent(ev)
 	return branches.find(repository.name, branch)
-		.tap(it => executions.create(it, {
+		.tap(it => executions.create(ev, it, {
 			repository,
 			branch,
 			stage: 'remove',
+			script: 'echo remove',
 		}))
 }
 
 function convertPushEvent (ev) {
+	const body = ev.body
 	const repository = {
-		name: ev.repository.name,
-		ssh: ev.repository.ssh_url,
-		url: ev.repository.url,
+		name: body.repository.name,
+		ssh: body.repository.ssh_url,
+		url: body.repository.url,
 	}
-	const branch = ev.ref.slice(11)
-	const commit = ev.after
+	const branch = body.ref.slice(11)
+	const commit = body.after
 	return { repository, branch, commit }
 }

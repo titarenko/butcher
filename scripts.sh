@@ -28,7 +28,7 @@ if [ "$COMMAND" = "start" ]; then
 		--name butcher-migrator \
 		titarenko/butcher-migrator
 
-	export BUTCHER="build:password@localhost:3002"
+	export BUTCHER="token@localhost:3002"
 	export BUTCHER_PG="postgres://butcher:butcher@$BUTCHER_PG_HOST/butcher"
 	export BUTCHER_WEB_APP_SECRET="c37649ab-e42f-4527-a019-1e7a49dc05cf"
 	export BUTCHER_GITHUB_SECRET="be411475-5024-41bd-866a-d98e9f0678e9"
