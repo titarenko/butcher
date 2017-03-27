@@ -1,5 +1,5 @@
 const { combineReducers } = require('redux')
-const { scope: { createReducer, createDispatch } } = require('buhoi-client')
+const { scope: { createReducer, createDispatch }, actions: { changeQuery } } = require('buhoi-client')
 const { List } = require('buhoi-ui')
 const moment = require('moment')
 
@@ -13,39 +13,48 @@ module.exports.reducer = combineReducers({
 	agents: createReducer('agents', List.reducer),
 })
 
-function Monitor ({ repositories, branches, executions, agents, dispatch }) {
+function Monitor ({ repositories, branches, executions, agents, route, dispatch }) {
+	const { rid, bid } = route.query || { }
+
+	const executionsDispatch = createDispatch('executions', dispatch)
+	const agentsDispatch = createDispatch('agents', dispatch)
+	const repositoriesDispatch = createDispatch('repositories', dispatch)
+	const branchesDispatch = createDispatch('branches', dispatch)
+
 	return <div className="monitor">
 		<article>
 			<List
 				{...executions}
 				resource="/api/monitor.executions"
+				query={{ repository_id: rid, branch_id: bid }}
 				Table={Executions}
-				dispatch={createDispatch('executions', dispatch)} />
+				dispatch={executionsDispatch} />
 		</article>
 		<aside>
-			<section>
-				<h2>agents</h2>
-				<List
-					{...agents}
-					resource="/api/monitor.agents"
-					Table={Agents}
-					dispatch={createDispatch('agents', dispatch)} />
-			</section>
 			<section>
 				<h2>repositories</h2>
 				<List
 					{...repositories}
 					resource="/api/monitor.repositories"
 					Table={Repositories}
-					dispatch={createDispatch('repositories', dispatch)} />
+					dispatch={repositoriesDispatch} />
 			</section>
 			<section>
 				<h2>branches</h2>
 				<List
 					{...branches}
 					resource="/api/monitor.branches"
+					query={{ repository_id: rid }}
 					Table={Branches}
-					dispatch={createDispatch('branches', dispatch)} />
+					dispatch={branchesDispatch} />
+			</section>
+			<section>
+				<h2>agents</h2>
+				<List
+					{...agents}
+					resource="/api/monitor.agents"
+					Table={Agents}
+					dispatch={agentsDispatch} />
 			</section>
 		</aside>
 	</div>
@@ -96,7 +105,10 @@ function Monitor ({ repositories, branches, executions, agents, dispatch }) {
 					<th>last upd.</th>
 				</tr>
 			</thead>
-			<tbody>{items.map(it => <tr>
+			<tbody>{items.map(it => <tr
+				className={rid == it.id ? 'selected' : 'selectable'}
+				onClick={() => toggleRepository(it)}
+			>
 				<td>{it.name}</td>
 				<td>{moment(it.updated_at || it.created_at).format('MMM DD, HH:mm')}</td>
 			</tr>)}</tbody>
@@ -112,11 +124,25 @@ function Monitor ({ repositories, branches, executions, agents, dispatch }) {
 					<th>last upd.</th>
 				</tr>
 			</thead>
-			<tbody>{items.map(it => <tr>
+			<tbody>{items.map(it => <tr
+				className={bid == it.id ? 'selected' : 'selectable'}
+				onClick={() => toggleBranch(it)}
+			>
 				<td>{it.name}</td>
 				<td>{it.repository}</td>
 				<td>{moment(it.updated_at || it.created_at).format('MMM DD, HH:mm')}</td>
 			</tr>)}</tbody>
 		</table>
+	}
+
+	function toggleRepository (it) {
+		dispatch(changeQuery({ rid: rid == it.id ? undefined : it.id, bid: undefined }))
+		branchesDispatch(List.actions.invalidate())
+		executionsDispatch(List.actions.invalidate())
+	}
+
+	function toggleBranch (it) {
+		dispatch(changeQuery({ bid: bid == it.id ? undefined : it.id }))
+		executionsDispatch(List.actions.invalidate())
 	}
 }

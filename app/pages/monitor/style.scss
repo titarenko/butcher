@@ -2,6 +2,7 @@
 	display: flex;
 	article {
 		flex-grow: 1;
+		margin-right: 10px;
 	}
 	aside {
 		height: 100%;
@@ -10,6 +11,7 @@
 		margin: 0;
 	}
 	.execution {
+		margin-bottom: 10px;
 		.failed {
 			background: darkred;
 			color: white;
@@ -36,5 +38,11 @@
 	aside {
 		background: lightgray;
 		padding: 5px;
+	}
+	.selected {
+		font-weight: bold;
+	}
+	.selected, .selectable {
+		cursor: pointer;
 	}
 }
