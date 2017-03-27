@@ -1,9 +1,37 @@
 .monitor {
 	display: flex;
-	section {
-		margin-right: 10px;
+	article {
+		flex-grow: 1;
 	}
 	ul {
 		margin: 0;
+	}
+	.execution {
+		.failed {
+			background: darkred;
+			color: white;
+			padding: 5px 0;
+		}
+		.succeeded {
+			background: darkgreen;
+			color: white;
+			padding: 5px 0;
+		}
+		.props {
+			display: flex;
+			& > * {
+				margin-right: 10px;
+			}
+		}
+		pre {
+			background: black;
+			color: white;
+			margin: 0;
+			padding: 10px 0;
+		}
+	}
+	aside {
+		background: lightgray;
+		padding: 5px;
 	}
 }
