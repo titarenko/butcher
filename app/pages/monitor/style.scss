@@ -17,6 +17,16 @@
 
 	.execution {
 		margin-bottom: 10px;
+		.pending {
+			background: darkgoldenrod;
+			color: white;
+			padding: 5px 0;
+		}
+		.aborted {
+			background: darkslategray;
+			color: white;
+			padding: 5px 0;
+		}
 		.failed {
 			background: darkred;
 			color: white;

@@ -14,7 +14,7 @@ function start ({ name, token, host, port }) {
 	const runa = runner.create({ directory: '/var/lib/butcher' })
 	const cli = client.create({
 		onConnection: () => cli.send({ type: 'AUTH', name, token }),
-		onCommand: command => runa.run({
+		onCommand: ({ command }) => runa.run({
 			command,
 			onStdout: content => cli.send({ type: 'STDOUT', content }),
 			onStderr: content => cli.send({ type: 'STDERR', content }),

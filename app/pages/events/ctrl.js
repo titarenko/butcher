@@ -20,6 +20,9 @@ function validate (params, req) {
 		.where({ name: _.get(req, 'body.repository.name') })
 		.first()
 		.then(repository => {
+			if (!repository) {
+				throw new validation.ValidationError({ 'repository': 'unknown' })
+			}
 			const actualHash = header.slice(5)
 			const expectedHash = crypto
 				.createHmac('sha1', repository.secret)

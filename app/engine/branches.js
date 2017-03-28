@@ -15,7 +15,7 @@ function find ({ repository, branch }) {
 		.first()
 		.then(it => {
 			if (!it) {
-				throw new NoBranchError(branch.name)
+				throw new NoBranchError(repository.name, branch.name)
 			}
 			return it
 		})

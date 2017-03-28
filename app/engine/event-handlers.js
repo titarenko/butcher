@@ -42,11 +42,16 @@ function handleDelete (event) {
 
 function getExtendedEvent (convertedEvent) {
 	return branches.find(convertedEvent)
-		.then(it => Object.assign({ }, convertedEvent, { branch: Object.assign({ id: it.id }) }))
+		.then(it => Object.assign(
+			{ },
+			convertedEvent,
+			{ branch: Object.assign({ id: it.id, script: it.script }, convertedEvent.branch) }
+		))
 }
 
 function convertPushEvent (ev) {
 	const body = ev.body
+	const event = { id: ev.id }
 	const repository = {
 		name: body.repository.name,
 		ssh: body.repository.ssh_url,
@@ -54,5 +59,5 @@ function convertPushEvent (ev) {
 	}
 	const branch = { name: body.ref.slice(11) }
 	const commit = { hash: body.after }
-	return { repository, branch, commit }
+	return { event, repository, branch, commit }
 }

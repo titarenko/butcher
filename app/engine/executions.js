@@ -17,7 +17,7 @@ function createExecution (command, agent) {
 	return pg('executions')
 		.insert({
 			event_id: command.event.id,
-			branch_id: command.event.branch.id,
+			branch_id: command.branch.id,
 			agent_id: agent.id,
 			command,
 			started_at: new Date(),
@@ -56,11 +56,11 @@ function finishExecution ({ command: { execution: { id } }, exit_code }) {
 		.catch(e => `failed to finish ${id} with ${exit_code} due to ${e.stack}`)
 }
 
-function abortExecution ({ command: { execution: { id } } }, error) {
+function abortExecution ({ execution: { id } }, error) {
 	return pg('executions')
 		.where({ id })
 		.update({
-			error,
+			error: { stack: error.stack, message: error.toString() },
 			aborted_at: new Date(),
 		})
 		.catch(e => log.error(`failed to abort ${id} with ${error.stack} due to ${e.stack}`))

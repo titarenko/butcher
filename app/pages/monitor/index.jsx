@@ -58,6 +58,7 @@ function Monitor ({ repositories, branches, executions, agents, route, dispatch 
 				<List
 					{...agents}
 					resource="/api/monitor.agents"
+					query={{ repository: query.r, branch: query.b }}
 					Table={Agents}
 					dispatch={agentsDispatch} />
 			</section>
@@ -67,18 +68,24 @@ function Monitor ({ repositories, branches, executions, agents, route, dispatch 
 	function Executions ({ items }) {
 		return <div>
 			{items.map(it => <div className="execution">
-				<div className={`props ${it.is_failed ? 'failed' : 'succeeded'}`}>
+				<div className={`props ${it.exit_code == null
+					? it.aborted_at == null ? 'pending' : 'aborted'
+					: it.exit_code != 0 ? 'failed' : 'succeeded'}`}>
 					<div>
 						<i className="fa fa-clock-o" aria-hidden="true"></i><span> </span>
-						{moment(it.finished_at || it.updated_at || it.started_at).format('MMM DD, HH:mm:ss')}
+						{moment(it.started_at).format('MMM DD, HH:mm:ss')}
 					</div>
 					<div><i className="fa fa-github" aria-hidden="true"></i> {it.repository}</div>
 					<div><i className="fa fa-code-fork" aria-hidden="true"></i> {it.branch}</div>
 					<div><i className="fa fa-hashtag" aria-hidden="true"></i> {it.commit}</div>
 					<div><i className="fa fa-cog" aria-hidden="true"></i> {it.agent}</div>
 					<div><i className="fa fa-play" aria-hidden="true"></i> {it.stage}</div>
+					<div>
+						<i className="fa fa-sign-out" aria-hidden="true"></i>
+						<span> {it.exit_code == null ? '—' : it.exit_code}</span>
+					</div>
 				</div>
-				<pre>{it.feedback}</pre>
+				<pre>{it.feedback || it.error}</pre>
 			</div>)}
 			{items.length > 20 ? <p>Only last 20 executions are shown.</p> : null}
 		</div>
@@ -96,8 +103,13 @@ function Monitor ({ repositories, branches, executions, agents, route, dispatch 
 				</tr>
 			</thead>
 			<tbody>{items.map(it => <tr>
-				<td title={it.ip}>{it.name || it.ip}</td>
-				<td title={moment(it.connected_at).fromNow()}>{moment(it.connected_at).format('MMM DD, HH:mm')}</td>
+				<td title={it.ip || 'not connected'}>{it.name || it.ip || '—'}</td>
+				{it.connected_at
+					? <td title={moment(it.connected_at).fromNow()}>
+						{moment(it.connected_at).format('MMM DD, HH:mm')}
+					</td>
+					: <td title="not connected">—</td>
+				}
 				<td>{it.stage || <em>any</em>}</td>
 				<td>{it.repository || <em>any</em>}</td>
 				<td>{it.branch || <em>any</em>}</td>
@@ -146,6 +158,7 @@ function Monitor ({ repositories, branches, executions, agents, route, dispatch 
 	function toggleRepository (it) {
 		dispatch(changeQuery({ r: query.r == it.name ? undefined : it.name, b: undefined }))
 		branchesDispatch(List.actions.invalidate())
+		agentsDispatch(List.actions.invalidate())
 		executionsDispatch(List.actions.invalidate())
 	}
 
@@ -157,6 +170,7 @@ function Monitor ({ repositories, branches, executions, agents, route, dispatch 
 			dispatch(changeQuery({ r: it.repository, b: it.name }))
 		}
 		executionsDispatch(List.actions.invalidate())
+		agentsDispatch(List.actions.invalidate())
 		if (branchFirst) {
 			branchesDispatch(List.actions.invalidate())
 		}

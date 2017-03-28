@@ -27,7 +27,7 @@ create table executions (
 	finished_at timestamptz,
 
 	aborted_at timestamptz,
-	error text
+	error jsonb
 );
 
 comment on column executions.error is 'reason why execution was aborted';
@@ -40,7 +40,7 @@ create table outputs (
 	execution_id int references executions not null,
 	occurred_at timestamptz not null,
 	is_error boolean not null,
-	content text not null,
+	content text not null
 );
 
 grant select, insert on outputs to butcher;

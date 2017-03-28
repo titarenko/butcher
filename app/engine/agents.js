@@ -53,15 +53,14 @@ function remove (socket) {
 
 function find (command) {
 	return Promise.try(() => {
-		const agent = agents
-			.filter(it => (!it.repository || it.repository == command.repository.name)
-				&& (!it.branch || it.branch == command.branch)
-				&& (!it.stage || it.stage == command.stage)
-			)[0]
-		if (!agent) {
-			throw new NoAgentError(command)
+		const agentIndex = agents.findIndex(it => (!it.repository || it.repository == command.repository.name)
+			&& (!it.branch || it.branch == command.branch.name)
+			&& (!it.stage || it.stage == command.stage)
+		)
+		if (agentIndex < 0) {
+			throw new NoAgentError(command.stage, command.branch.name, command.repository.name)
 		}
-		return agent
+		return agents[agentIndex]
 	})
 }
 

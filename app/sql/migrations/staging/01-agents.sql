@@ -1,1 +1,1 @@
-insert into agents (token) values ('token');
+insert into agents (token, created_at) values ('token', now());
