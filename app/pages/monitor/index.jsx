@@ -1,5 +1,5 @@
 const { combineReducers } = require('redux')
-const { scope: { createReducer, createDispatch }, actions: { changeQuery } } = require('buhoi-client')
+const { scope: { createReducer, createDispatch }, actions: { navigateTo, changeQuery } } = require('buhoi-client')
 const { List } = require('buhoi-ui')
 const moment = require('moment')
 
@@ -31,6 +31,11 @@ function Monitor ({ repositories, branches, executions, agents, route, dispatch 
 				dispatch={executionsDispatch} />
 		</article>
 		<aside>
+			<button
+				className="config"
+				onClick={() => dispatch(navigateTo('/config'))}
+				title="config"
+			><i className="fa fa-cogs" aria-hidden="true"></i></button>
 			<section>
 				<h2>repositories</h2>
 				<List

@@ -9,6 +9,10 @@ create table agents (
 	name text,
 	ip text,
 
+	created_at timestamptz not null,
+	updated_at timestamptz,
+	removed_at timestamptz,
+
 	connected_at timestamptz,
 	disconnected_at timestamptz
 );

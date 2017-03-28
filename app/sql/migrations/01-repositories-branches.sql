@@ -2,8 +2,15 @@ create table repositories (
 	id smallserial primary key,
 
 	name text not null,
+	secret text not null,
+
 	url text not null,
 	ssh text not null,
+
+	build_script text,
+	stage_script text,
+	release_script text,
+	remove_script text,
 
 	created_at timestamptz not null default now(),
 	updated_at timestamptz,
