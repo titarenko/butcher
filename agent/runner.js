@@ -9,43 +9,35 @@ module.exports = { create }
 
 function create ({ directory }) {
 	return { run }
-	function run ({ command, onText, onSuccess, onFailure }) {
+
+	function run ({ command, onStdout, onStderr, onExit, onError }) {
 		log.debug('running command %j', command)
-		const filename = `${command.repository.name}-${command.branch}.sh`
 
-		log.debug('running %s built upon %j in %s', filename, command, directory)
-
+		const filename = `${command.repository.name}-${command.branch.name}.sh`
 		const options = {
 			cwd: directory,
 			env: {
-				'BUTCHER_REPOSITORY': command.repository.name,
+				'BUTCHER_REPOSITORY_NAME': command.repository.name,
 				'BUTCHER_REPOSITORY_SSH': command.repository.ssh,
-				'BUTCHER_BRANCH': command.branch,
-				'BUTCHER_COMMIT': command.commit,
+				'BUTCHER_BRANCH_NAME': command.branch.name,
+				'BUTCHER_COMMIT_HASH': command.commit.hash,
+				'BUTCHER_STAGE': command.stage,
 			},
 		}
 
-		writeFile(path.join(directory, filename), command.script, { mode: 0o700 })
-			.then(() => exec({
-				filename,
-				args: [command.stage],
-				options,
-				onData: data => onText(data.toString()),
-			}))
-			.then(() => onSuccess())
-			.catch(e => {
-				log.warn('execution %d failed due to %e', command.execution, e)
-				onFailure(e.exitCode || 'no exit code')
-			})
+		writeFile(path.join(directory, filename), command.branch.script, { mode: 0o700 })
+			.then(() => exec({ filename, options, onStdout, onStderr }))
+			.then(onExit)
+			.catch(e => onError(e.stack))
 	}
 }
 
-function exec ({ filename, args, options, onData }) {
+function exec ({ filename, options, onStdout, onStderr }) {
 	return new Promise((resolve, reject) => {
-		const child = execFile(filename, args, options)
-		child.stderr.on('data', onData)
-		child.stdout.on('data', onData)
+		const child = execFile(filename, options)
+		child.stderr.on('data', buffer => onStderr(buffer.toString()))
+		child.stdout.on('data', buffer => onStdout(buffer.toString()))
 		child.on('error', reject)
-		child.on('close', exitCode => exitCode ? reject({ exitCode }) : resolve())
+		child.on('close', resolve)
 	})
 }

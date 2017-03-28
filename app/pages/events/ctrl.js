@@ -1,9 +1,9 @@
+const _ = require('lodash')
 const crypto = require('crypto')
 const { validation, security } = require('buhoi')
 
 const pg = require('../../pg')
 const bus = require('../../bus')
-const config = require('../../config')
 
 module.exports = { create: security.bypass(validate, create) }
 
@@ -15,21 +15,27 @@ function validate (params, req) {
 		throw new validation.ValidationError({ 'x-hub-signature': 'invalid format' })
 	}
 
-	const actualHash = header.slice(5)
-	const expectedHash = crypto
-		.createHmac('sha1', config.gitHub.secret)
-		.update(req.rawBody)
-		.digest('hex')
+	return pg('repositories')
+		.select('secret')
+		.where({ name: _.get(req, 'body.repository.name') })
+		.first()
+		.then(repository => {
+			const actualHash = header.slice(5)
+			const expectedHash = crypto
+				.createHmac('sha1', repository.secret)
+				.update(req.rawBody)
+				.digest('hex')
 
-	if (actualHash != expectedHash) {
-		throw new validation.ValidationError({ 'x-hub-signature': 'invalid hash' })
-	}
+			if (actualHash != expectedHash) {
+				throw new validation.ValidationError({ 'x-hub-signature': 'invalid hash' })
+			}
+		})
 }
 
 function create (params, req) {
 	return pg('events')
 		.insert({
-			time: new Date(),
+			occurred_at: new Date(),
 			ip: req.ip,
 			headers: req.headers,
 			body: req.body,

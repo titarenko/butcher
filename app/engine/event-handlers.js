@@ -9,9 +9,9 @@ function handleGithubEvent (ev) {
 	const handler = findHandler(ev)
 	if (handler) {
 		handler(ev)
-			.catch(error => log.error('event %d is not handled due to %s', ev.id, error.stack))
+			.catch(error => log.error(`event ${ev.id} is not handled due to ${error.stack}`))
 	} else {
-		log.debug('event %j is skipped since there is no handler for it', ev)
+		log.debug(`no handler for event ${ev.id}`)
 	}
 }
 
@@ -25,48 +25,24 @@ function findHandler (ev) {
 }
 
 function handlePush (event) {
-	const { repository, branch, commit } = convertPushEvent(event)
-	return branches.find(repository.name, branch)
-		.tap(it => executions.create({
-			event,
-			branch: it,
-			command: {
-				repository,
-				branch,
-				commit,
-				stage: 'build',
-				script: 'echo build',
-			},
-		}))
-		.tap(it => executions.create({
-			event,
-			branch: it,
-			command: {
-				repository,
-				branch,
-				commit,
-				stage: 'stage',
-				script: 'echo stage',
-			},
-		}))
-		.catch(NoBranchError, () => branches.create(repository, branch)
+	const convertedEvent = convertPushEvent(event)
+	return getExtendedEvent(convertedEvent)
+		.tap(it => executions.create(Object.assign({ stage: 'build' }, it)))
+		.tap(it => executions.create(Object.assign({ stage: 'stage' }, it)))
+		.catch(NoBranchError, () => branches.create(convertedEvent)
 			.then(() => handlePush(event))
 		)
 }
 
 function handleDelete (event) {
-	const { repository, branch } = convertPushEvent(event)
-	return branches.find(repository.name, branch)
-		.tap(it => executions.create({
-			event,
-			branch: it,
-			command: {
-				repository,
-				branch,
-				stage: 'remove',
-				script: 'echo remove',
-			},
-		}))
+	const convertedEvent = convertPushEvent(event)
+	return getExtendedEvent(convertedEvent)
+		.tap(it => executions.create(Object.assign({ stage: 'remove' }, it)))
+}
+
+function getExtendedEvent (convertedEvent) {
+	return branches.find(convertedEvent)
+		.then(it => Object.assign({ }, convertedEvent, { branch: Object.assign({ id: it.id }) }))
 }
 
 function convertPushEvent (ev) {
@@ -76,7 +52,7 @@ function convertPushEvent (ev) {
 		ssh: body.repository.ssh_url,
 		url: body.repository.url,
 	}
-	const branch = body.ref.slice(11)
-	const commit = body.after
+	const branch = { name: body.ref.slice(11) }
+	const commit = { hash: body.after }
 	return { repository, branch, commit }
 }

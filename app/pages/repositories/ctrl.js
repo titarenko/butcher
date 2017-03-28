@@ -4,6 +4,7 @@ const { security, validation } = require('buhoi')
 const validate = validation.create({
 	name: validation.required(),
 	secret: validation.required(),
+	script: validation.required(),
 })
 
 module.exports = {
@@ -18,7 +19,7 @@ function list () {
 }
 
 function view (id) {
-	return pg('repositories as r').where({ id }).first()
+	return pg('repositories').where({ id }).first()
 }
 
 function create (params) {
@@ -26,10 +27,7 @@ function create (params) {
 		.insert({
 			name: params.name,
 			secret: params.secret,
-			build_script: params.build_script,
-			stage_script: params.stage_script,
-			release_script: params.release_script,
-			remove_script: params.remove_script,
+			script: params.script,
 			created_at: new Date(),
 		})
 		.return()
@@ -41,10 +39,7 @@ function update (params) {
 		.update({
 			name: params.name,
 			secret: params.secret,
-			build_script: params.build_script,
-			stage_script: params.stage_script,
-			release_script: params.release_script,
-			remove_script: params.remove_script,
+			script: params.script,
 			updated_at: new Date(),
 		})
 		.return()

@@ -17,5 +17,7 @@ create table agents (
 	disconnected_at timestamptz
 );
 
+create unique index agents_token_unique on agents (token) where removed_at is null; 
+
 grant select, insert, update, delete on agents to butcher;
 grant all on sequence agents_id_seq to butcher;

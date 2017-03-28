@@ -11,10 +11,10 @@ function create ({ onConnection, onCommand, onError }) {
 		onConnection()
 	})
 
-	client.on('data', data => {
-		const text = data.toString()
-		log.debug(`received command ${text}`)
-		onCommand(JSON.parse(text))
+	client.on('data', buffer => {
+		const content = buffer.toString()
+		log.debug(`received command ${content}`)
+		onCommand(JSON.parse(content))
 	})
 
 	client.on('error', error => {
@@ -28,9 +28,9 @@ function create ({ onConnection, onCommand, onError }) {
 			client.connect(port, host)
 		},
 		send: command => {
-			const text = JSON.stringify(command)
-			log.debug(`sending command ${text}`)
-			client.write(text)
+			const content = JSON.stringify(command)
+			log.debug(`sending command ${content}`)
+			client.write(content)
 		},
 		isDestroyed: () => client.destroyed,
 		destroy: () => client.destroy(),

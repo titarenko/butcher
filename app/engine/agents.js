@@ -42,10 +42,11 @@ function add ({ name, token, socket }) {
 function remove (socket) {
 	const index = agents.findIndex(it => it.socket == socket)
 	if (index >= 0) {
+		const id = agents[index].id
 		pg('agents')
-			.where({ id: agents[index].id })
+			.where({ id })
 			.update({ disconnected_at: new Date() })
-			.catch(e => log.error(`failed to update agent state due to ${e.stack}`))
+			.catch(e => log.error(`failed to update agent ${id} state due to ${e.stack}`))
 		agents.splice(index, 1)
 	}
 }
@@ -65,30 +66,58 @@ function find (command) {
 }
 
 function createAgent (socket, props) {
-	return Object.assign({ socket }, props, {
-		execute: (command, onFeedback) => new Promise((resolve, reject) =>
-			execute(socket, command, onFeedback, resolve, reject)
-		),
-	})
+	return Object.assign({ socket }, props, { execute })
+	function execute (params) {
+		return new Promise((resolve, reject) => executeOnAgent(socket, params, resolve, reject))
+	}
 }
 
-function execute (socket, command, onFeedback, resolve, reject) {
+function executeOnAgent (socket, { command, onStdout, onStderr, onExit }, resolve, reject) {
+	socket.addListener('error', finalize)
+	socket.addListener('close', () => finalize(new Error('agent socket unexpectedly closed')))
 	socket.addListener('data', handleUpdate)
+
 	socket.write(JSON.stringify({ type: 'EXECUTE', command }))
+
+	let finalized = false
+
+	function finalize (error) {
+		if (finalized) {
+			return
+		}
+
+		socket.removeListener('close', finalize)
+		socket.removeListener('error', finalize)
+		socket.removeListener('data', handleUpdate)
+
+		finalized = true
+
+		if (error) {
+			reject(error)
+		} else {
+			resolve()
+		}
+	}
 
 	function handleUpdate (buffer) {
 		const data = buffer.toString()
-		log.debug('receiving feedback "%s" on execution %d', data, command.execution)
-		const { type, text, code } = JSON.parse(data)
+		log.debug('receiving feedback "%s" on execution %d', data, command.execution.id)
 
-		if (type == 'FEEDBACK') {
-			onFeedback(text)
-		} else if (type == 'SUCCESS') {
-			socket.removeListener('data', handleUpdate)
-			resolve()
-		} else if (type == 'FAILURE') {
-			socket.removeListener('data', handleUpdate)
-			reject(new Error(`Execution ${command.execution} failed with code ${code}.`))
+		const { type, content } = JSON.parse(data)
+		switch (type) {
+			case 'STDOUT':
+				onStdout(content)
+				break
+			case 'STDERR':
+				onStderr(content)
+				break
+			case 'EXIT':
+				onExit(content)
+				finalize()
+				break
+			case 'ERROR':
+				finalize(new Error(content))
+				break
 		}
 	}
 }

@@ -4,52 +4,64 @@ const log = require('totlog')(__filename)
 
 module.exports = { create }
 
-function create (params) {
-	const { event, branch, command } = params
+function create (command) {
 	return agents.find(command)
-		.then(agent => createExecution({ agent, event, branch, command })
-			.then(execution => runExecution({ execution, agent, command }))
+		.then(agent => createExecution(command, agent)
+			.then(execution => Object.assign({ }, command, { execution: { id: execution.id } }))
+			.then(command => runExecution(command, agent))
 		)
 		.catch(e => log.error('failed to start execution of %j due to %s', command, e.stack))
 }
 
-function createExecution ({ event, branch, agent, command }) {
+function createExecution (command, agent) {
 	return pg('executions')
 		.insert({
-			event_id: event.id,
-			branch_id: branch.id,
+			event_id: command.event.id,
+			branch_id: command.event.branch.id,
 			agent_id: agent.id,
 			command,
+			started_at: new Date(),
 		})
 		.returning('*')
 		.then(it => it[0])
 }
 
-function runExecution ({ execution, agent, command }) {
-	const params = Object.assign({ }, command, { execution: execution.id })
-	return agent.execute(params, text => updateExecution(execution.id, text))
-		.then(() => finalizeExecution(execution.id))
-		.catch(error => finalizeExecution(execution.id, error))
-}
-
-function updateExecution (id, text) {
-	return pg('executions')
-		.where({ id })
-		.update({
-			feedback: pg.raw("coalesce(feedback, '') || ?", [text]),
-			updated_at: new Date(),
+function runExecution (command, agent) {
+	return agent
+		.execute({
+			command,
+			onStdout: content => appendOutput({ command, content, is_error: false }),
+			onStderr: content => appendOutput({ command, content, is_error: true }),
+			onExit: exit_code => finishExecution({ command, exit_code }),
 		})
-		.catch(e => log.error(`failed to update execution ${id} with ${text} due to ${e.stack}`))
+		.catch(error => abortExecution(command, error))
 }
 
-function finalizeExecution (id, error) {
-	if (error) {
-		log.warn(`execution ${id} failed due to ${error.stack}`)
-	}
+function appendOutput ({ command: { execution: { id } }, content, is_error }) {
+	return Promise
+		.all([
+			pg('executions').where({ id }).update({ updated_at: new Date() }),
+			pg('outputs').insert({ occurred_at: new Date(), execution_id: id, content, is_error }),
+		])
+		.catch(e => `failed to append "${content}" (error: ${is_error}) for ${id} due to ${e.stack}`)
+}
+
+function finishExecution ({ command: { execution: { id } }, exit_code }) {
 	return pg('executions')
 		.where({ id })
 		.update({
+			exit_code,
 			finished_at: new Date(),
-			is_failed: error != null,
 		})
+		.catch(e => `failed to finish ${id} with ${exit_code} due to ${e.stack}`)
+}
+
+function abortExecution ({ command: { execution: { id } } }, error) {
+	return pg('executions')
+		.where({ id })
+		.update({
+			error,
+			aborted_at: new Date(),
+		})
+		.catch(e => log.error(`failed to abort ${id} with ${error.stack} due to ${e.stack}`))
 }

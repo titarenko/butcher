@@ -26,17 +26,26 @@ function Config ({ repositories, repository, agents, agent, route, dispatch }) {
 
 	return <div className="config">
 		<section>
-			<button
-				title="back to monitor"
-				onClick={() => dispatch(navigateTo('/monitor'))}
-			><i className="fa fa-arrow-left" aria-hidden="true"></i></button>
+			<h2>
+				<button
+					title="back to monitor"
+					onClick={() => dispatch(navigateTo('/monitor'))}
+				><i className="fa fa-arrow-left" aria-hidden="true"></i> back</button>
+			</h2>
 		</section>
 		<section>
-			<h2>repositories</h2>
-			{query.r
+			<h2>
+				<span>repositories </span>
+				<button
+					title="add"
+					onClick={() => editRepository({ id: null })}
+				><i className="fa fa-plus" aria-hidden="true"></i></button>
+			</h2>
+			{query.r !== undefined
 				? <Edit
 					{...repository}
 					id={query.r}
+					removable
 					resource="/api/repositories"
 					onFinish={() => editRepository()}
 					Form={Repository}
@@ -49,11 +58,18 @@ function Config ({ repositories, repository, agents, agent, route, dispatch }) {
 			}
 		</section>
 		<section>
-			<h2>agents</h2>
-			{query.a
+			<h2>
+				<span>agents </span>
+				<button
+					title="add"
+					onClick={() => editAgent({ id: null })}
+				><i className="fa fa-plus" aria-hidden="true"></i></button>
+			</h2>
+			{query.a !== undefined
 				? <Edit
 					{...agent}
 					id={query.a}
+					removable
 					resource="/api/agents"
 					onFinish={() => editAgent()}
 					Form={Agent}
@@ -108,29 +124,11 @@ function Config ({ repositories, repository, agents, agent, route, dispatch }) {
 				value={fields.secret}
 				onChange={v => repositoryDispatch(Edit.actions.setField('secret', v))} />
 			<TextInput
-				label="build"
+				label="script"
 				lines="auto"
-				error={validationErrors.build_script}
-				value={fields.build_script}
-				onChange={v => repositoryDispatch(Edit.actions.setField('build_script', v))} />
-			<TextInput
-				label="stage"
-				lines="auto"
-				error={validationErrors.stage_script}
-				value={fields.stage_script}
-				onChange={v => repositoryDispatch(Edit.actions.setField('stage_script', v))} />
-			<TextInput
-				label="release"
-				lines="auto"
-				error={validationErrors.release_script}
-				value={fields.release_script}
-				onChange={v => repositoryDispatch(Edit.actions.setField('release_script', v))} />
-			<TextInput
-				label="remove"
-				lines="auto"
-				error={validationErrors.remove_script}
-				value={fields.remove_script}
-				onChange={v => repositoryDispatch(Edit.actions.setField('remove_script', v))} />
+				error={validationErrors.script}
+				value={fields.script}
+				onChange={v => repositoryDispatch(Edit.actions.setField('script', v))} />
 		</div>
 	}
 
@@ -164,7 +162,7 @@ function Config ({ repositories, repository, agents, agent, route, dispatch }) {
 		dispatch(changeQuery({ a: it ? it.id : undefined }))
 		if (!it) {
 			agentDispatch(Edit.actions.reset())
-			agentDispatch(List.actions.invalidate())
+			agentsDispatch(List.actions.invalidate())
 		}
 	}
 

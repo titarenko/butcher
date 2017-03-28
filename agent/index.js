@@ -11,17 +11,18 @@ Promise.longStackTraces()
 config.parse().then(start).catch(log.error)
 
 function start ({ name, token, host, port }) {
-	const runnerInstance = runner.create({ directory: '/var/lib/butcher' })
-	const clientInstance = client.create({
-		onConnection: () => clientInstance.send({ type: 'AUTH', name, token }),
-		onCommand: command => runnerInstance.run({
-			command: command.command,
-			onText: text => clientInstance.send({ type: 'FEEDBACK', id: command.id, text }),
-			onSuccess: () => clientInstance.send({ type: 'SUCCESS', id: command.id }),
-			onFailure: code => clientInstance.send({ type: 'FAILURE', id: command.id, code }),
+	const runa = runner.create({ directory: '/var/lib/butcher' })
+	const cli = client.create({
+		onConnection: () => cli.send({ type: 'AUTH', name, token }),
+		onCommand: command => runa.run({
+			command,
+			onStdout: content => cli.send({ type: 'STDOUT', content }),
+			onStderr: content => cli.send({ type: 'STDERR', content }),
+			onExit: content => cli.send({ type: 'EXIT', content }),
+			onError: content => cli.send({ type: 'ERROR', content }),
 		}),
 		onError: () => process.nextTick(() => process.kill(process.pid, 'SIGINT')),
 	})
-	process.on('SIGINT', () => clientInstance.destroy())
-	clientInstance.connect({ host, port })
+	process.on('SIGINT', () => cli.destroy())
+	cli.connect({ host, port })
 }

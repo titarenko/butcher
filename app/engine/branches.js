@@ -1,36 +1,33 @@
 const pg = require('../pg')
 const repositories = require('./repositories')
-const { NoRepositoryError, NoBranchError } = require('./errors')
+const { NoBranchError } = require('./errors')
 
 module.exports = { find, create }
 
-function find (repositoryName, branchName) {
-	return pg('branches')
+function find ({ repository, branch }) {
+	return pg('branches as b')
+		.join('repositories as r', 'r.id', 'b.repository_id')
 		.where({
-			repository_id: pg('repositories')
-				.select('id')
-				.where({ name: repositoryName }),
-			name: branchName,
+			'r.name': repository.name,
+			'b.name': branch.name,
 		})
+		.select('b.*', 'r.script')
 		.first()
 		.then(it => {
 			if (!it) {
-				throw new NoBranchError(branchName)
+				throw new NoBranchError(branch.name)
 			}
 			return it
 		})
 }
 
-function create (repository, branchName) {
-	return repositories.find(repository.name)
+function create ({ repository, branch }) {
+	return repositories.find({ repository })
 		.then(it => pg('branches')
 			.insert({
 				repository_id: it.id,
-				name: branchName,
+				name: branch.name,
 				created_at: new Date(),
 			})
-		)
-		.catch(NoRepositoryError, () => repositories.create(repository)
-			.then(() => create(repository, branchName))
 		)
 }

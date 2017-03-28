@@ -1,9 +1,9 @@
 const pg = require('../pg')
 const { NoRepositoryError } = require('./errors')
 
-module.exports = { find, create }
+module.exports = { find }
 
-function find (name) {
+function find ({ repository: { name } }) {
 	return pg('repositories')
 		.where({ name })
 		.first()
@@ -13,8 +13,4 @@ function find (name) {
 			}
 			return it
 		})
-}
-
-function create ({ name, url, ssh }) {
-	return pg('repositories').insert({ name, url, ssh })
 }
