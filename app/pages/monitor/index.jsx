@@ -14,7 +14,7 @@ module.exports.reducer = combineReducers({
 })
 
 function Monitor ({ repositories, branches, executions, agents, route, dispatch }) {
-	const { rid, bid } = route.query || { }
+	const query = route.query || { }
 
 	const executionsDispatch = createDispatch('executions', dispatch)
 	const agentsDispatch = createDispatch('agents', dispatch)
@@ -26,7 +26,7 @@ function Monitor ({ repositories, branches, executions, agents, route, dispatch 
 			<List
 				{...executions}
 				resource="/api/monitor.executions"
-				query={{ repository_id: rid, branch_id: bid }}
+				query={{ repository: query.r, branch: query.b }}
 				Table={Executions}
 				dispatch={executionsDispatch} />
 		</article>
@@ -44,7 +44,7 @@ function Monitor ({ repositories, branches, executions, agents, route, dispatch 
 				<List
 					{...branches}
 					resource="/api/monitor.branches"
-					query={{ repository_id: rid }}
+					query={{ repository: query.r }}
 					Table={Branches}
 					dispatch={branchesDispatch} />
 			</section>
@@ -60,20 +60,23 @@ function Monitor ({ repositories, branches, executions, agents, route, dispatch 
 	</div>
 
 	function Executions ({ items }) {
-		return <div>{items.map(it => <div className="execution">
-			<div className={`props ${it.is_failed ? 'failed' : 'succeeded'}`}>
-				<div>
-					<i className="fa fa-clock-o" aria-hidden="true"></i><span> </span>
-					{moment(it.finished_at || it.updated_at || it.started_at).format('MMM DD, HH:mm:ss')}
+		return <div>
+			{items.map(it => <div className="execution">
+				<div className={`props ${it.is_failed ? 'failed' : 'succeeded'}`}>
+					<div>
+						<i className="fa fa-clock-o" aria-hidden="true"></i><span> </span>
+						{moment(it.finished_at || it.updated_at || it.started_at).format('MMM DD, HH:mm:ss')}
+					</div>
+					<div><i className="fa fa-github" aria-hidden="true"></i> {it.repository}</div>
+					<div><i className="fa fa-code-fork" aria-hidden="true"></i> {it.branch}</div>
+					<div><i className="fa fa-hashtag" aria-hidden="true"></i> {it.commit}</div>
+					<div><i className="fa fa-cog" aria-hidden="true"></i> {it.agent}</div>
+					<div><i className="fa fa-play" aria-hidden="true"></i> {it.stage}</div>
 				</div>
-				<div><i className="fa fa-github" aria-hidden="true"></i> {it.repository}</div>
-				<div><i className="fa fa-code-fork" aria-hidden="true"></i> {it.branch}</div>
-				<div><i className="fa fa-hashtag" aria-hidden="true"></i> {it.commit}</div>
-				<div><i className="fa fa-cog" aria-hidden="true"></i> {it.agent}</div>
-				<div><i className="fa fa-play" aria-hidden="true"></i> {it.stage}</div>
-			</div>
-			<pre>{it.feedback}</pre>
-		</div>)}</div>
+				<pre>{it.feedback}</pre>
+			</div>)}
+			{items.length > 20 ? <p>Only last 20 executions are shown.</p> : null}
+		</div>
 	}
 
 	function Agents ({ items }) {
@@ -106,7 +109,7 @@ function Monitor ({ repositories, branches, executions, agents, route, dispatch 
 				</tr>
 			</thead>
 			<tbody>{items.map(it => <tr
-				className={rid == it.id ? 'selected' : 'selectable'}
+				className={query.r == it.name ? 'selected' : 'selectable'}
 				onClick={() => toggleRepository(it)}
 			>
 				<td>{it.name}</td>
@@ -120,29 +123,37 @@ function Monitor ({ repositories, branches, executions, agents, route, dispatch 
 			<thead>
 				<tr>
 					<th>name</th>
-					<th>rep.</th>
+					{query.r ? null : <th>rep.</th>}
 					<th>last upd.</th>
 				</tr>
 			</thead>
 			<tbody>{items.map(it => <tr
-				className={bid == it.id ? 'selected' : 'selectable'}
+				className={query.b == it.name && query.r == it.repository ? 'selected' : 'selectable'}
 				onClick={() => toggleBranch(it)}
 			>
 				<td>{it.name}</td>
-				<td>{it.repository}</td>
+				{query.r ? null : <td>{it.repository}</td>}
 				<td>{moment(it.updated_at || it.created_at).format('MMM DD, HH:mm')}</td>
 			</tr>)}</tbody>
 		</table>
 	}
 
 	function toggleRepository (it) {
-		dispatch(changeQuery({ rid: rid == it.id ? undefined : it.id, bid: undefined }))
+		dispatch(changeQuery({ r: query.r == it.name ? undefined : it.name, b: undefined }))
 		branchesDispatch(List.actions.invalidate())
 		executionsDispatch(List.actions.invalidate())
 	}
 
 	function toggleBranch (it) {
-		dispatch(changeQuery({ bid: bid == it.id ? undefined : it.id }))
+		const branchFirst = query.r === undefined
+		if (query.r == it.repository && query.b == it.name) {
+			dispatch(changeQuery({ b: undefined }))
+		} else {
+			dispatch(changeQuery({ r: it.repository, b: it.name }))
+		}
 		executionsDispatch(List.actions.invalidate())
+		if (branchFirst) {
+			branchesDispatch(List.actions.invalidate())
+		}
 	}
 }
