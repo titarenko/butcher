@@ -1,15 +1,16 @@
 .monitor {
 	display: flex;
+	background: black;
+	height: 100%;
+
 	article {
 		flex-grow: 1;
-		margin-right: 10px;
 	}
 	aside {
-		height: 100%;
+		background: lightgray;
+		padding: 5px;
 	}
-	ul {
-		margin: 0;
-	}
+
 	.execution {
 		margin-bottom: 10px;
 		.failed {
@@ -35,12 +36,10 @@
 			padding: 10px 0;
 		}
 	}
-	aside {
-		background: lightgray;
-		padding: 5px;
-	}
-	.selected {
-		font-weight: bold;
+
+	.selected, .selectable:hover {
+		background: black;
+		color: white;
 	}
 	.selected, .selectable {
 		cursor: pointer;
