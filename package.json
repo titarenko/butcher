@@ -9,7 +9,8 @@
     "prepush": "npm run lint",
     "agent": "nodemon ./agent",
     "app": "nodemon ./app & webpack-dev-server --inline --hot --config ./app/webpack.config.js",
-    "start": "sh scripts.sh start"
+    "start": "sh scripts.sh start",
+    "loc": "git ls-files | grep -E '.jsx?$' | grep -E '^[^.]' | xargs wc -l"
   },
   "repository": {
     "type": "git",
