@@ -43,9 +43,9 @@ function handleDelete (event) {
 function getExtendedEvent (convertedEvent) {
 	return branches.find(convertedEvent)
 		.then(it => Object.assign(
-			{ },
+			{ script: it.script },
 			convertedEvent,
-			{ branch: Object.assign({ id: it.id, script: it.script }, convertedEvent.branch) }
+			{ branch: Object.assign({ id: it.id }, convertedEvent.branch) }
 		))
 }
 

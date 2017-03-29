@@ -13,6 +13,7 @@ function add ({ name, token, socket }) {
 		.first()
 		.tap(it => {
 			if (!it) {
+				log.warn(`unknown agent ${name} with token ${token} from ${socket.remoteAddress}`)
 				return
 			}
 			socket.on('close', () => remove(socket))

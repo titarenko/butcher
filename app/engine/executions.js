@@ -43,7 +43,7 @@ function appendOutput ({ command: { execution: { id } }, content, is_error }) {
 			pg('executions').where({ id }).update({ updated_at: new Date() }),
 			pg('outputs').insert({ occurred_at: new Date(), execution_id: id, content, is_error }),
 		])
-		.catch(e => `failed to append "${content}" (error: ${is_error}) for ${id} due to ${e.stack}`)
+		.catch(e => log.error(`failed to append "${content}" (error: ${is_error}) for ${id} due to ${e.stack}`))
 }
 
 function finishExecution ({ command: { execution: { id } }, exit_code }) {
@@ -53,7 +53,7 @@ function finishExecution ({ command: { execution: { id } }, exit_code }) {
 			exit_code,
 			finished_at: new Date(),
 		})
-		.catch(e => `failed to finish ${id} with ${exit_code} due to ${e.stack}`)
+		.catch(e => log.error(`failed to finish ${id} with ${exit_code} due to ${e.stack}`))
 }
 
 function abortExecution ({ execution: { id } }, error) {

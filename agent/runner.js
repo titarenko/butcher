@@ -17,6 +17,7 @@ function create ({ directory }) {
 		const options = {
 			cwd: directory,
 			env: {
+				'BUTCHER_HOME': directory,
 				'BUTCHER_REPOSITORY_NAME': command.repository.name,
 				'BUTCHER_REPOSITORY_SSH': command.repository.ssh,
 				'BUTCHER_BRANCH_NAME': command.branch.name,
@@ -25,7 +26,7 @@ function create ({ directory }) {
 			},
 		}
 
-		writeFile(path.join(directory, filename), command.branch.script, { mode: 0o700 })
+		writeFile(path.join(directory, filename), command.script, { mode: 0o700 })
 			.then(() => exec({ filename, options, onStdout, onStderr }))
 			.then(onExit)
 			.catch(e => onError(e.stack))
