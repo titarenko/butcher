@@ -8,10 +8,10 @@ const validate = validation.create({
 })
 
 module.exports = {
-	list,
-	view,
-	create: security.bypass(validate, create),
-	update: security.bypass(validate, update),
+	list: security.allow(list),
+	view: security.allow(view),
+	create: security.allow(validate, create),
+	update: security.allow(validate, update),
 }
 
 function list () {

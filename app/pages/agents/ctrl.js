@@ -4,10 +4,10 @@ const { security, validation } = require('buhoi')
 const validate = validation.create({ token: validation.required() })
 
 module.exports = {
-	list,
-	view,
-	create: security.bypass(validate, create),
-	update: security.bypass(validate, update),
+	list: security.allow(list),
+	view: security.allow(view),
+	create: security.allow(validate, create),
+	update: security.allow(validate, update),
 }
 
 function list () {

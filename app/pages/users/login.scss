@@ -1,0 +1,16 @@
+.login {
+	display: flex;
+	height: 100%;
+	form {
+		margin: auto;
+		.input {
+			display: inline-block;
+			span {
+				display: block;
+			}
+		}
+		input {
+			vertical-align: top;
+		}
+	}
+}
