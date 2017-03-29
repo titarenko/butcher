@@ -6,6 +6,7 @@
 	article {
 		flex-grow: 1;
 	}
+
 	aside {
 		background: lightgray;
 		padding: 5px;
@@ -17,28 +18,10 @@
 
 	.execution {
 		margin-bottom: 10px;
-		.pending {
-			background: darkgoldenrod;
-			color: white;
-			padding: 5px 0;
-		}
-		.aborted {
-			background: darkslategray;
-			color: white;
-			padding: 5px 0;
-		}
-		.failed {
-			background: darkred;
-			color: white;
-			padding: 5px 0;
-		}
-		.succeeded {
-			background: darkgreen;
-			color: white;
-			padding: 5px 0;
-		}
 		.props {
 			display: flex;
+			color: white;
+			padding: 5px 0;
 			& > * {
 				margin-right: 10px;
 			}
@@ -49,6 +32,19 @@
 			margin: 0;
 			padding: 10px 0;
 		}
+	}
+
+	.pending {
+		background: darkgoldenrod;
+	}
+	.aborted {
+		background: darkslategray;
+	}
+	.failed {
+		background: darkred;
+	}
+	.succeeded {
+		background: darkgreen;
 	}
 
 	.selected, .selectable:hover {
