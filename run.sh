@@ -54,6 +54,8 @@ if [ "$SUBJECT" = "app" ]; then
 			--env "PG_ROOT_PWD=$PG_ROOT_PWD" \
 			--env "PG_APP_PWD=$PG_APP_PWD" \
 			--volume "/var/lib/butcher-pg:/var/lib/butcher-pg" \
+			--log-opt max-size=1g \
+			--log-opt max-file=10 \
 			--name butcher-pg \
 			titarenko/butcher-pg
 	fi
@@ -97,6 +99,8 @@ if [ "$SUBJECT" = "app" ]; then
 		--publish "$ENGINE_APP_PORT:3002" \
 		--volume "$WEB_APP_CERT_PATH:/etc/certs:ro" \
 		--volume "/var/run/docker.sock:/var/run/docker.sock:ro" \
+		--log-opt max-size=1g \
+		--log-opt max-file=10 \
 		--name butcher-app \
 		titarenko/butcher-app
 

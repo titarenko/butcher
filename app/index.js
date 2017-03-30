@@ -6,6 +6,8 @@ const bodyParser = require('body-parser')
 const { server, router, security } = require('buhoi')
 const helmet = require('helmet')
 const compression = require('compression')
+const RateLimit = require('express-rate-limit')
+const morgan = require('morgan')
 const config = require('./config')
 
 const ports = {
@@ -20,6 +22,16 @@ engine.listen(ports.engine)
 
 const app = express()
 
+const limit = new RateLimit({
+	windowMs: 15000,
+	max: 30,
+	delayAfter: 20,
+	delayMs: 1500,
+	message: 'Too many zooz! https://www.youtube.com/watch?v=mD2xXNg_Vy8',
+})
+
+app.use(morgan(':date[iso] :remote-addr :method :url :status :response-time'))
+app.use(limit)
 app.use(cookieParser())
 app.use(authentication)
 app.use(bodyParser.json({ verify: assignRawBody }))
