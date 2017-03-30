@@ -10,4 +10,4 @@ RUN npm i
 COPY . .
 
 ENTRYPOINT ["node"]
-CMD ["./bootstrapper"]
+CMD ["./app/bootstrapper"]
