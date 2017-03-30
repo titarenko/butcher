@@ -10,8 +10,8 @@ Promise.longStackTraces()
 
 config.parse().then(start).catch(log.error)
 
-function start ({ name, token, host, port }) {
-	const runa = runner.create({ directory: '/var/lib/butcher' })
+function start ({ name, token, host, port, home }) {
+	const runa = runner.create({ directory: home })
 	const cli = client.create({
 		onConnection: () => cli.send({ type: 'AUTH', name, token }),
 		onCommand: ({ command }) => runa.run({

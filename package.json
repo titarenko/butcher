@@ -40,7 +40,7 @@
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",
     "buhoi": "^1.0.8",
-    "buhoi-client": "^2.0.11",
+    "buhoi-client": "^2.0.13",
     "buhoi-ui": "^1.0.6",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",

@@ -8,30 +8,35 @@ COMMAND=$1
 
 if [ "$COMMAND" = "start" ]; then
 
-	if [ ! "$(docker ps -a | grep butcher-pg)" ]; then
-		docker build --tag titarenko/butcher-pg $DIR/app/sql
-		docker run --detach --name butcher-pg titarenko/butcher-pg
-	fi
-
-	export BUTCHER_PG_HOST=$(docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" butcher-pg)
 	export NODE_ENV=development
 
-	docker build --tag titarenko/butcher-migrator $DIR/app/sql/migrations
+	if [ ! "$(docker ps -a | grep butcher-pg)" ]; then
+		docker build --tag titarenko/butcher-pg -f ./app/sql/Dockerfile $DIR
+		docker run \
+			--detach \
+			--env "PG_ROOT_PWD=root" \
+			--env "PG_APP_PWD=butcher" \
+			--name butcher-pg \
+			titarenko/butcher-pg
+	fi
+	PG_HOST=$(docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" butcher-pg)
+
+	docker build --tag titarenko/butcher-migrator -f ./app/sql/migrations/Dockerfile $DIR
 	if [ "$(docker ps -a | grep butcher-migrator)" ]; then
 		docker rm -f butcher-migrator
 	fi
 	docker run \
 		--detach \
 		--restart on-failure \
-		--env "PG=postgres://root:root@$BUTCHER_PG_HOST/butcher" \
+		--env "PG=postgres://root:root@$PG_HOST/butcher" \
 		--env "NODE_ENV=$NODE_ENV" \
 		--name butcher-migrator \
 		titarenko/butcher-migrator
 
-	export BUTCHER="token@localhost:3002"
-	export BUTCHER_PG="postgres://butcher:butcher@$BUTCHER_PG_HOST/butcher"
-	export BUTCHER_WEB_APP_SECRET="c37649ab-e42f-4527-a019-1e7a49dc05cf"
-	export BUTCHER_GITHUB_SECRET="be411475-5024-41bd-866a-d98e9f0678e9"
+	export BUTCHER_CONNECTION="token@localhost:3002"
+	export BUTCHER_HOME="/var/lib/butcher"
+	export PG="postgres://butcher:butcher@$PG_HOST/butcher"
+	export WEB_APP_SECRET="c37649ab-e42f-4527-a019-1e7a49dc05cf"
 
 	npm run app & npm run agent
 
