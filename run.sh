@@ -4,6 +4,8 @@ set -e
 
 SUBJECT=${1:-"app"}
 
+echo "going to start butcher $SUBJECT"
+
 if [ "$SUBJECT" = "app" ]; then
 
 	#########
@@ -32,6 +34,12 @@ if [ "$SUBJECT" = "app" ]; then
 
 	ENGINE_APP_PORT=${BUTCHER_ENGINE_APP_PORT:-"703"}
 
+	ADMIN_PWD=$BUTCHER_ADMIN_PWD
+	if [ ! "$ADMIN_PWD" ]; then
+		read -s -p "enter admin password: " ADMIN_PWD
+		echo -e "\n"
+	fi
+
 	######
 	# DB #
 	######
@@ -58,14 +66,15 @@ if [ "$SUBJECT" = "app" ]; then
 		--name butcher-migrator \
 		titarenko/butcher-migrator
 
-	ADMIN_PWD=$BUTCHER_ADMIN_PWD
-	if [ ! "$ADMIN_PWD" ]; then
-		read -p "enter admin password: " ADMIN_PWD
+	if [ "$(docker ps -a | grep butcher-bootstrapper)" ]; then
+		docker rm -f butcher-bootstrapper
 	fi
-	docker run
-		--env "ADMIN_NAME=admin"
-		--env "ADMIN_PWD=$ADMIN_PWD"
-		--name butcher-bootstrapper
+	docker run \
+		--env "PG=postgres://root:$PG_ROOT_PWD@$PG_HOST/butcher" \
+		--env "WEB_APP_SECRET=$WEB_APP_SECRET" \
+		--env "ADMIN_NAME=admin" \
+		--env "ADMIN_PWD=$ADMIN_PWD" \
+		--name butcher-bootstrapper \
 		titarenko/butcher-bootstrapper
 
 	#######
