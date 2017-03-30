@@ -4,11 +4,11 @@ ENV NODE_ENV production
 
 WORKDIR /srv
 
-COPY ../package.json .
+COPY package.json .
 RUN npm i
 
 COPY . .
-RUN npm run build-web-app
+RUN npm run build
 
 STOPSIGNAL SIGINT
 
