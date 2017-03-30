@@ -41,7 +41,7 @@
     "body-parser": "^1.17.1",
     "buhoi": "^1.0.8",
     "buhoi-client": "^2.0.13",
-    "buhoi-ui": "^1.0.6",
+    "buhoi-ui": "^1.0.7",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
     "css-loader": "^0.28.0",
