@@ -13,7 +13,8 @@
     "build-app": "NODE_ENV=production webpack -p --config ./app/webpack.config.js",
     "release": "bash scripts.sh release",
     "loc": "git ls-files | grep -E '.jsx?$' | grep -E '^[^.]' | xargs wc -l",
-    "check": "npm-check --ignore eslint-config-plugin:react --ignore css-loader --ignore node-sass --ignore pg --ignore sass-loader --ignore style-loader --ignore husky --ignore webpack-dev-server"
+    "check": "npm-check --ignore eslint-config-plugin:react --ignore css-loader --ignore node-sass --ignore pg --ignore sass-loader --ignore style-loader --ignore husky --ignore webpack-dev-server",
+    "update": "npm-check --ignore eslint-config-plugin:react --ignore css-loader --ignore node-sass --ignore pg --ignore sass-loader --ignore style-loader --ignore husky --ignore webpack-dev-server -u"
   },
   "repository": {
     "type": "git",
@@ -39,7 +40,7 @@
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",
     "buhoi": "^1.0.8",
-    "buhoi-client": "^2.0.10",
+    "buhoi-client": "^2.0.11",
     "buhoi-ui": "^1.0.6",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
