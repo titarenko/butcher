@@ -47,10 +47,10 @@ if [ "$SUBJECT" = "app" ]; then
 	if [ ! "$(docker ps -a | grep butcher-pg)" ]; then
 		docker run \
 			--detach \
-			--restart always
-			--env "PG_ROOT_PWD=$PG_ROOT_PWD"
-			--env "PG_APP_PWD=$PG_APP_PWD"
-			--volume "/var/lib/butcher-pg:/var/lib/butcher-pg"
+			--restart always \
+			--env "PG_ROOT_PWD=$PG_ROOT_PWD" \
+			--env "PG_APP_PWD=$PG_APP_PWD" \
+			--volume "/var/lib/butcher-pg:/var/lib/butcher-pg" \
 			--name butcher-pg \
 			titarenko/butcher-pg
 	fi
