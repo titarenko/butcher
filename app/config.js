@@ -1,17 +1,17 @@
-const webAppSecret = process.env.BUTCHER_WEB_APP_SECRET
-if (!webAppSecret) {
-	throw new Error('BUTCHER_WEB_APP_SECRET is missing')
+const { WEB_APP_SECRET, PG } = process.env
+
+if (!PG) {
+	throw new Error('PG is missing')
 }
 
-const connection = process.env.BUTCHER_PG
-if (!connection) {
-	throw new Error('BUTCHER_PG is missing')
+if (!WEB_APP_SECRET) {
+	throw new Error('WEB_APP_SECRET is missing')
 }
 
 module.exports = {
 	pg: {
-		connection,
+		connection: PG,
 		client: 'pg',
 	},
-	webApp: { secret: webAppSecret },
+	webApp: { secret: WEB_APP_SECRET },
 }
