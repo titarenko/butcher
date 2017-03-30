@@ -3,9 +3,9 @@
 ## Install & Run
 
 ```sh
-source <(curl -s https://raw.githubusercontent.com/titarenko/butcher/master/run.sh)
+bash <(curl -s https://raw.githubusercontent.com/titarenko/butcher/master/run.sh)
 ```
 
-# License
+## License
 
 MIT
