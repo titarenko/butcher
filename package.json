@@ -37,7 +37,7 @@
     "babel-preset-stage-0": "^6.22.0",
     "body": "^4.5.0",
     "body-parser": "^1.17.1",
-    "buhoi": "^1.0.7",
+    "buhoi": "^1.0.8",
     "buhoi-client": "^2.0.10",
     "buhoi-ui": "^1.0.6",
     "cookie-parser": "^1.4.3",
