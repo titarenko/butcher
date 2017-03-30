@@ -30,6 +30,9 @@ if [ "$SUBJECT" = "app" ]; then
 			read -p "enter domain name: " domain
 			WEB_APP_CERT_PATH=/etc/letsencrypt/archive/$domain
 		fi
+		if [ ! -f "$WEB_APP_CERT_PATH/dh1.pem" ]; then
+			openssl dhparam -out "$WEB_APP_CERT_PATH/dh1.pem" 2048
+		fi
 	fi
 
 	ENGINE_APP_PORT=${BUTCHER_ENGINE_APP_PORT:-"703"}
