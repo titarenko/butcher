@@ -8,7 +8,7 @@ COPY package.json .
 RUN npm i
 
 COPY . .
-RUN npm run build
+RUN npm run build-app
 
 STOPSIGNAL SIGINT
 

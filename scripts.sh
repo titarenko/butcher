@@ -35,25 +35,23 @@ if [ "$COMMAND" = "start" ]; then
 
 	npm run app & npm run agent
 
-elif [ "$COMMAND" = "build" ]; then
+elif [ "$COMMAND" = "release" ]; then
 
 	docker build --tag titarenko/butcher-agent $DIR/agent
-	docker build --tag titarenko/butcher-app $DIR/app
 
-elif [ "$COMMAND" = "run-agent" ]; then
+	docker build --tag titarenko/butcher-pg -f ./app/sql/Dockerfile $DIR
+	docker build --tag titarenko/butcher-migrator -f ./app/sql/migrations/Dockerfile $DIR
 
-	docker run \
-		--volume /var/run/docker.sock:/var/run/docker.sock:ro \
-		--volume /var/lib/butcher:/home/ev/.butcher \
-		--detach \
-		--env "BUTCHER_CONNECTION=$BUTCHER_CONNECTION" \
-		--name butcher-agent \
-		titarenko/butcher-agent
-	docker logs --follow --timestamps butcher-agent
+	docker build --tag titarenko/butcher-app -f ./app/Dockerfile $DIR
+	docker build --tag titarenko/butcher-bootstrapper -f ./app/bootstrapper/Dockerfile $DIR
 
-elif [ "$COMMAND" = "run-app" ]; then
+	docker push titarenko/butcher-agent
 
-	echo "TODO run"
+	docker push titarenko/butcher-pg
+	docker push titarenko/butcher-migrator
+
+	docker push titarenko/butcher-app
+	docker push titarenko/butcher-bootstrapper
 
 elif [ "$COMMAND" = "test" ]; then
 
