@@ -81,21 +81,21 @@ if [ "$SUBJECT" = "app" ]; then
 	# app #
 	#######
 
-	if [ "$(docker ps -a | grep butcher)" ]; then
-		docker rm -f butcher
+	if [ "$(docker ps -a | grep butcher-app)" ]; then
+		docker rm -f butcher-app
 	fi
 	docker run \
-		--detach
+		--detach \
 		--restart always \
 		--env "PG=postgres://butcher:$PG_APP_PWD@$PG_HOST/butcher" \
 		--env "WEB_APP_SECRET=$WEB_APP_SECRET" \
-		--publish "80:3000"
-		--publish "443:3001"
-		--publish "$ENGINE_APP_PORT:3002"
-		--volume "$WEB_APP_CERT_PATH:/etc/letsencrypt:ro"
-		--volume "/var/run/docker.sock:/var/run/docker.sock:ro"
-		--name butcher \
-		titarenko/butcher
+		--publish "80:3000" \
+		--publish "443:3001" \
+		--publish "$ENGINE_APP_PORT:3002" \
+		--volume "$WEB_APP_CERT_PATH:/etc/letsencrypt:ro" \
+		--volume "/var/run/docker.sock:/var/run/docker.sock:ro" \
+		--name butcher-app \
+		titarenko/butcher-app
 
 elif [ "$SUBJECT" = "agent" ]; then
 
