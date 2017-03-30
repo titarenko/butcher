@@ -88,7 +88,7 @@ if [ "$SUBJECT" = "app" ]; then
 		--name butcher \
 		titarenko/butcher
 
-elif [ "$SUBJECT" = "agent" ]
+elif [ "$SUBJECT" = "agent" ]; then
 
 	BUTCHER_CONNECTION=$BUTCHER_CONNECTION
 	if [ ! "$BUTCHER_CONNECTION" ]; then
