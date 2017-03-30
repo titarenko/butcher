@@ -1,0 +1,1 @@
+module.exports = { roles: { admin: 1 } }
