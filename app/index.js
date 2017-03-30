@@ -4,6 +4,8 @@ const express = require('express')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const { server, router, security } = require('buhoi')
+const helmet = require('helmet')
+const compression = require('compression')
 const config = require('./config')
 
 const ports = {
@@ -22,6 +24,8 @@ app.use(cookieParser())
 app.use(authentication)
 app.use(bodyParser.json({ verify: assignRawBody }))
 app.use('/api', router({ basePath: `${__dirname}/pages` }))
+app.use(helmet.noCache())
+app.use(compression())
 app.use(express.static(`${__dirname}/static`))
 app.use(fallback)
 
