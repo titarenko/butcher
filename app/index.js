@@ -26,10 +26,15 @@ app.use(express.static(`${__dirname}/static`))
 app.use(fallback)
 
 if (process.env.NODE_ENV == 'development') {
-	server.http(app).listen(ports.http)
+	const httpServer = server.http(app).listen(ports.http)
+	process.on('SIGINT', () => httpServer.shutdown())
 } else {
-	server.http({ redirectToHttps: true }).listen(ports.http)
-	server.https(app, { letsencrypt: '/etc/certs' }).listen(ports.https)
+	const httpServer = server.http({ redirectToHttps: true }).listen(ports.http)
+	const httpsServer = server.https(app, { letsencrypt: '/etc/certs' }).listen(ports.https)
+	process.on('SIGINT', () => {
+		httpServer.shutdown()
+		httpsServer.shutdown()
+	})
 }
 
 function authentication (req, res, next) {

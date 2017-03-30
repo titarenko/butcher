@@ -14,7 +14,7 @@ if [ "$SUBJECT" = "app" ]; then
 
 	if [ ! \( "$BUTCHER_PG_ROOT_PWD" -a "$BUTCHER_PG_APP_PWD" -a "$BUTCHER_WEB_APP_SECRET" \) ]; then
 		read -s -p "enter master password: " master_pwd
-		echo -e "\n"
+		echo ""
 	fi
 
 	PG_ROOT_PWD=${BUTCHER_PG_ROOT_PWD:-"`echo "81feb854f8e9497880a2c26605f813f2$master_pwd" | md5sum | cut -d ' ' -f 1`"}
@@ -37,7 +37,7 @@ if [ "$SUBJECT" = "app" ]; then
 	ADMIN_PWD=$BUTCHER_ADMIN_PWD
 	if [ ! "$ADMIN_PWD" ]; then
 		read -s -p "enter admin password: " ADMIN_PWD
-		echo -e "\n"
+		echo ""
 	fi
 
 	######
@@ -92,7 +92,7 @@ if [ "$SUBJECT" = "app" ]; then
 		--publish "80:3000" \
 		--publish "443:3001" \
 		--publish "$ENGINE_APP_PORT:3002" \
-		--volume "$WEB_APP_CERT_PATH:/etc/letsencrypt:ro" \
+		--volume "$WEB_APP_CERT_PATH:/etc/certs:ro" \
 		--volume "/var/run/docker.sock:/var/run/docker.sock:ro" \
 		--name butcher-app \
 		titarenko/butcher-app

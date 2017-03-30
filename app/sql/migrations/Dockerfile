@@ -1,2 +1,2 @@
 FROM titarenko/buhoi-migrator
-COPY . .
+COPY app/sql/migrations .

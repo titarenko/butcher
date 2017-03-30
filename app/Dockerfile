@@ -17,4 +17,4 @@ EXPOSE 3001
 EXPOSE 3002
 
 ENTRYPOINT ["node"]
-CMD ["./"]
+CMD ["./app"]
