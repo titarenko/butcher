@@ -11,12 +11,23 @@ if (!ADMIN_NAME || !ADMIN_PWD) {
 }
 
 pg('users')
-	.insert({
-		name: ADMIN_NAME,
-		password_hash: security.hashPassword(ADMIN_PWD),
-		roles: [roles.admin],
+	.where({ name: 'admin' })
+	.first()
+	.then(it => {
+		if (it) {
+			log.debug('admin already exists')
+			return
+		}
+		return pg('users').insert({
+			name: ADMIN_NAME,
+			password_hash: security.hashPassword(ADMIN_PWD),
+			roles: [roles.admin],
+		})
 	})
-	.then(() => process.exit(0))
+	.then(() => {
+		log.debug('done!')
+		process.exit(0)
+	})
 	.catch(e => {
 		log.error(`failed to add admin user due to ${e.stack}`)
 		process.exit(1)
