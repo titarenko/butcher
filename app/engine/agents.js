@@ -80,6 +80,7 @@ function executeOnAgent (socket, { command, onStdout, onStderr, onExit }, resolv
 	socket.write(JSON.stringify({ type: 'EXECUTE', command }))
 
 	let finalized = false
+	let buffer = ''
 
 	function finalize (error) {
 		if (finalized) {
@@ -99,13 +100,19 @@ function executeOnAgent (socket, { command, onStdout, onStderr, onExit }, resolv
 		}
 	}
 
-	function handleUpdate (buffer) {
-		const data = buffer.toString()
-		log.debug('receiving feedback "%s" on execution %d', data, command.execution.id)
-		data.split('\n').filter(Boolean).map(handleCommand)
+	function handleUpdate (data) {
+		const chunk = data.toString()
+		log.debug('receiving feedback "%s" on execution %d', chunk, command.execution.id)
+		buffer += chunk
+		const lastIndex = buffer.lastIndexOf('\n')
+		if (lastIndex >= 0) {
+			const content = buffer.slice(0, lastIndex)
+			buffer = buffer.slice(lastIndex + 1, buffer.length)
+			content.split('\n').filter(Boolean).map(handleFeedback)
+		}
 	}
 
-	function handleCommand (data) {
+	function handleFeedback (data) {
 		log.debug('handling command "%s" on execution %d', data, command.execution.id)
 		const { type, content } = JSON.parse(data)
 		switch (type) {
