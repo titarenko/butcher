@@ -98,7 +98,6 @@ if [ "$SUBJECT" = "app" ]; then
 		--publish "443:3001" \
 		--publish "$ENGINE_APP_PORT:3002" \
 		--volume "$WEB_APP_CERT_PATH:/etc/certs:ro" \
-		--volume "/var/run/docker.sock:/var/run/docker.sock:ro" \
 		--log-opt max-size=1g \
 		--log-opt max-file=10 \
 		--name butcher-app \
@@ -120,6 +119,8 @@ elif [ "$SUBJECT" = "agent" ]; then
 		--restart always \
 		--env "BUTCHER_CONNECTION=$BUTCHER_CONNECTION" \
 		--env "BUTCHER_HOME=$BUTCHER_HOME" \
+		--volume "/var/run/docker.sock:/var/run/docker.sock:ro" \
+		--volume "$BUTCHER_HOME:/var/lib/butcher" \
 		--name butcher-agent \
 		titarenko/butcher-agent
 
