@@ -62,5 +62,5 @@ function executions (params) {
 		)
 		.where(filter(params))
 		.orderByRaw('started_at desc nulls last')
-		.limit(21)
+		.limit(11)
 }

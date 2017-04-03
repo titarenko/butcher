@@ -68,9 +68,9 @@ function Monitor ({ repositories, branches, executions, agents, route, dispatch 
 	function Executions ({ items }) {
 		return <div>
 			{items.map(it => <div className="execution">
-				<div className={`props ${it.exit_code == null
+				<div className={`props ${it.exit_code == null && it.signal == null
 					? it.aborted_at == null ? 'pending' : 'aborted'
-					: it.exit_code != 0 ? 'failed' : 'succeeded'}`}>
+					: it.exit_code != 0 || it.signal ? 'failed' : 'succeeded'}`}>
 					<div>
 						<i className="fa fa-clock-o" aria-hidden="true"></i><span> </span>
 						{moment(it.started_at).format('MMM DD, HH:mm:ss')}
@@ -82,12 +82,12 @@ function Monitor ({ repositories, branches, executions, agents, route, dispatch 
 					<div><i className="fa fa-play" aria-hidden="true"></i> {it.stage}</div>
 					<div>
 						<i className="fa fa-sign-out" aria-hidden="true"></i>
-						<span> {it.exit_code == null ? '—' : it.exit_code}</span>
+						<span> {it.exit_code == null && it.signal == null ? '—' : it.exit_code || it.signal}</span>
 					</div>
 				</div>
 				<pre>{it.feedback || it.error}</pre>
 			</div>)}
-			{items.length > 20 ? <p>Only last 20 executions are shown.</p> : null}
+			{items.length > 10 ? <p>Only last 10 executions are shown.</p> : null}
 		</div>
 	}
 
