@@ -39,6 +39,6 @@ function exec ({ filename, options, onStdout, onStderr }) {
 		child.stderr.on('data', buffer => onStderr(buffer.toString()))
 		child.stdout.on('data', buffer => onStdout(buffer.toString()))
 		child.on('error', reject)
-		child.on('close', resolve)
+		child.on('close', (exit_code, signal) => resolve({ exit_code, signal }))
 	})
 }

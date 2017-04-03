@@ -32,7 +32,7 @@ function runExecution (command, agent) {
 			command,
 			onStdout: content => appendOutput({ command, content, is_error: false }),
 			onStderr: content => appendOutput({ command, content, is_error: true }),
-			onExit: exit_code => finishExecution({ command, exit_code }),
+			onExit: ({ exit_code, signal }) => finishExecution({ command, exit_code, signal }),
 		})
 		.catch(error => abortExecution(command, error))
 }
@@ -46,11 +46,12 @@ function appendOutput ({ command: { execution: { id } }, content, is_error }) {
 		.catch(e => log.error(`failed to append "${content}" (error: ${is_error}) for ${id} due to ${e.stack}`))
 }
 
-function finishExecution ({ command: { execution: { id } }, exit_code }) {
+function finishExecution ({ command: { execution: { id } }, exit_code, signal }) {
 	return pg('executions')
 		.where({ id })
 		.update({
 			exit_code,
+			signal,
 			finished_at: new Date(),
 		})
 		.catch(e => log.error(`failed to finish ${id} with ${exit_code} due to ${e.stack}`))
