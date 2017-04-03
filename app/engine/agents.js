@@ -102,7 +102,11 @@ function executeOnAgent (socket, { command, onStdout, onStderr, onExit }, resolv
 	function handleUpdate (buffer) {
 		const data = buffer.toString()
 		log.debug('receiving feedback "%s" on execution %d', data, command.execution.id)
+		data.split('\n').filter(Boolean).map(handleCommand)
+	}
 
+	function handleCommand (data) {
+		log.debug('handling command "%s" on execution %d', data, command.execution.id)
 		const { type, content } = JSON.parse(data)
 		switch (type) {
 			case 'STDOUT':

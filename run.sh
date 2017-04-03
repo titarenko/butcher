@@ -48,6 +48,7 @@ if [ "$SUBJECT" = "app" ]; then
 	######
 
 	if [ ! "$(docker ps -a | grep butcher-pg)" ]; then
+		docker pull titarenko/butcher-pg
 		docker run \
 			--detach \
 			--restart always \
@@ -64,6 +65,7 @@ if [ "$SUBJECT" = "app" ]; then
 	if [ "$(docker ps -a | grep butcher-migrator)" ]; then
 		docker rm -f butcher-migrator
 	fi
+	docker pull titarenko/butcher-migrator
 	docker run \
 		--restart on-failure \
 		--env "PG=postgres://root:$PG_ROOT_PWD@$PG_HOST/butcher" \
@@ -74,6 +76,7 @@ if [ "$SUBJECT" = "app" ]; then
 	if [ "$(docker ps -a | grep butcher-bootstrapper)" ]; then
 		docker rm -f butcher-bootstrapper
 	fi
+	docker pull titarenko/butcher-bootstrapper
 	docker run \
 		--env "PG=postgres://root:$PG_ROOT_PWD@$PG_HOST/butcher" \
 		--env "WEB_APP_SECRET=$WEB_APP_SECRET" \
@@ -89,6 +92,7 @@ if [ "$SUBJECT" = "app" ]; then
 	if [ "$(docker ps -a | grep butcher-app)" ]; then
 		docker rm -f butcher-app
 	fi
+	docker pull titarenko/butcher-app
 	docker run \
 		--detach \
 		--restart always \
@@ -111,6 +115,7 @@ elif [ "$SUBJECT" = "agent" ]; then
 	fi
 	BUTCHER_HOME=${BUTCHER_HOME:-"/var/lib/butcher"}
 
+	docker pull titarenko/butcher-agent
 	if [ "$(docker ps -a | grep butcher-agent)" ]; then
 		docker rm -f butcher-agent
 	fi

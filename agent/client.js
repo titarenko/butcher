@@ -30,7 +30,7 @@ function create ({ onConnection, onCommand, onError }) {
 		send: command => {
 			const content = JSON.stringify(command)
 			log.debug(`sending command ${content}`)
-			client.write(content)
+			client.write(`${content}\n`)
 		},
 		isDestroyed: () => client.destroyed,
 		destroy: () => client.destroy(),
