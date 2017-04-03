@@ -24,6 +24,7 @@ function create ({ directory }) {
 				'BUTCHER_COMMIT_HASH': command.commit.hash,
 				'BUTCHER_STAGE': command.stage,
 			},
+			maxBuffer: 1024*1024*1024, // 1gb
 		}
 
 		writeFile(path.join(directory, filename), command.script, { mode: 0o700 })
